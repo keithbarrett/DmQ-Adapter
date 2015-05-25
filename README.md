@@ -13,7 +13,7 @@ documentation), allowing odd and unsupported platforms to communicate on
 the message bus using TCP/IP Sockets. It was a tool given away to help
 customers and not part of the DmQ product.
 
-I was quite proud of this work, as I wrote it in portable C (ANSI and K&R)
+I was pleased with this work, as I wrote it in portable C (ANSI and K&R)
 "endian independent" code compatible with 32bit, 64bit, and RISC
 processsors. There were no compile variants in the code; just a platform
 specific include file that defined how the code would compile and run.
