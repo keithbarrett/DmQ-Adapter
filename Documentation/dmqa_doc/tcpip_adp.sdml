@@ -1,0 +1,29 @@
+<comment>
+VMS-PAMS TCP/IP Queue Adapter Reference
+Created 21-Nov-1990
+Keith G Barrett
+PAMS Resource Center
+Rocky Hill, CT
+<endcomment>
+<profile>
+<document_attributes>
+<set_page_numbering>(BY_CHAPTER)
+<set_formal_element_numbering>(BY_CHAPTER)
+<enddocument_attributes>       
+
+<element>(TCPIP_ADP_FRONT.SDML)
+<contents_file>
+<element>(TCPADP_INTRO.SDML)
+<element>(TCPADP_OVERVIEW.SDML)
+<element>(TCPADP_ADPPROC.SDML)
+<element>(TCPADP_API.SDML)
+<element>(TCPADP_CLIENTS.SDML)
+<element>(TCPADP_APND_LIMITS.SDML)
+<element>(TCPADP_APND_client.SDML)
+<element>(TCPADP_APND_opt.SDML)
+<element>(TCPADP_APND_debug.SDML)
+<element>(TCPADP_APND_PCPAMS.SDML)
+<element>(TCPADP_APND_PAMSV25.SDML)
+<index_file>       
+
+<endprofile>

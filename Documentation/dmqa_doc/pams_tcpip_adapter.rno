@@ -1,0 +1,148 @@
+.figure 5
+.c; PAMS TCP/IP Adapter
+.skip
+.c; Keith Barrett
+.c; Digital Equipment Corp.
+.skip
+.c; PRELIMINARY RELEASE
+.c; 25-Sep-1990
+.page
+.i
+This document describes the PAMS VMS TCP/IP Adapter, a software component that
+allows a client running on a remote system to perform limited PAMS functionality
+via TCP/IP communications.
+.skip
+The information in this software is subject to change  without  notice
+and  should  not  be  construed  as  a commitment by DIGITAL Equipment
+Corporation.
+
+DIGITAL assumes no responsibility for the use or  reliability  of  its
+software on equipment which is not supplied by DIGITAL.
+.page
+.Chapter Description
+.i
+This software package will allow a PAMS client, with minimal changes, to
+execute transparently on a remote system by using TCP/IP communications.
+
+.hl Overview
+.i
+The client program is linked to an "alternative" PAMS library (called the
+TCP/IP PAMS services). When the resulting client is run and executes a PAMS
+service call, the PAMS call will
+automatically be formatted into a TCP/IP message and sent to the
+VMS_TCPIP_ADAPTER (hereafter referred to as the "Adapter"). The adapter parses
+the message and executed the "real" PAMS service. The resulting status and
+returned information is then packed into a response message and sent back to the
+client function. This response is processed and returned
+to the calling application as
+if the PAMS function was executed on the local system.
+.skip
+.lt
+                  +---------------------------+
+             .-   |   Application program     |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+     Client -+    |   PAMS function call      |
+             |    +---------------------------+
+             |    | Reformat parameters into  |
+             |    |       a TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |  adapter process and wait |
+                  +---------------------------+
+                                \
+                                /
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |      PAMS function call   |
+             |    +---------------------------+
+    adapter -+    |   Perform PAMS function   |
+             |    | and format results into a |
+             |    |         TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |       Client and wait     |
+                  +---------------------------+
+                                \
+                                /
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |   PAMS Returned values    |
+             |    +---------------------------+
+     Client -+    |   Return to application   |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+             `-   |   Application program     |
+                  +---------------------------+
+.el
+.skip
+.i
+The Adapter must run under VMS 5.1 or higher and requires UCX 1.2 or higher
+and PAMS V2.5 or higher; DECnet is not required unless the local VMS PAMS
+system needs to communicate with PAMS groups/servers running on other systems.
+The TCP/IP client should be able to run under any system supporting TCP/IP
+socket communications; although only VMS and Ultrix have currently been tested.
+.hl Contents
+.i
+This software is broken down into the following components:
+.list
+.le; The VMS_TCPIP_ADAPTER. This program runs under the VMS system and will
+execute the PAMS commands received from the TCP/IP client.
+.le; The Common PAMS TCP/IP functions (P_TCPFNC). These functions are used by
+both the client and the Adapter to perform basic TCP/IP communications.
+.le; The TCP/IP PAMS services (P_TCPIP). These are replacement functions
+for the standard PAMS services, but have the same extry point definitions.
+When a client program is linked to these functions instead of the PAMS library,
+the PAMS call will be formated into a TCP/IP message and send to the Adapter
+for execution. The Adapter will respond with the results and this will be
+returned to the calling application.
+.le; The include files. In addition to the necessary files for TCP/IP socket
+communications, the client must also include two PAMS TCP/IP files.
+.le; Sample Client program and simple test program.
+.els
+.skip
+.hl +1   Sample Client Program _& Test Program
+.i
+The sample Client program (SAMP_TCP.C) and the PAMS TCP/IP test program
+(TCPTEST.C) provide examples of a simplistic client
+process that essentially performs the following functions:
+
+.lt
+		  +---------------------------+
+		  |  Declare Process to PAMS  |
+		  |  using PAMS_DCL_PROCESS   |
+		  +---------------------------+
+			        |
+                                V
+                  +---------------------------+
+                  | Initialize Variables, etc.|
+                  +---------------------------+
+              +---------------->|
+              |                 V
+              |   +---------------------------+
+              |   |   Wait for a message to   |
+              |   |     be received using     |
+              |   |       PAMS_GET_MSGW       |
+              |   +---------------------------+
+              |                 |
+              |                 V
+              |   +---------------------------+
+              |   |   Send "canned" response  |
+              |   |  message to client using  |
+              |   |       PAMS_PUT_MSG        |
+              |   +---------------------------+
+              |                 |
+              +---------<-------+
+.el
+.chapter	Writing/Modifying Client Applications to Use This Software
+.chapter	Notes

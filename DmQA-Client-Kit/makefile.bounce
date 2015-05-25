@@ -1,0 +1,24 @@
+#!/bin/sh5
+
+C_FLAGS    = -O
+
+all:			bounce
+
+bounce:		bounce.o dmqa_api.o dmqa_tso.o dmqpp.o dmqin.o
+			cc -o bounce bounce.o dmqa_api.o dmqa_tso.o dmqpp.o dmqin.o
+
+bounce.o:		bounce.c
+			cc -c $(C_FLAGS) bounce.c
+
+dmqa_api.o:		dmqa_api.c
+			cc -c $(C_FLAGS) dmqa_api.c
+
+dmqa_tso.o:		dmqa_tso.c
+			cc -c $(C_FLAGS) dmqa_tso.c
+
+dmqpp.o:		dmqpp.c
+			cc -c $(C_FLAGS) dmqpp.c
+
+dmqin.o:		dmqin.c
+			cc -c $(C_FLAGS) dmqin.c
+

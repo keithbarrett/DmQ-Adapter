@@ -1,0 +1,7 @@
+<code_example>
+main()
+{
+#ifdef	PAMS$TCPIP_ADAPTER
+    tcpip_debug = TRUE;
+#endif
+<endcode_example>

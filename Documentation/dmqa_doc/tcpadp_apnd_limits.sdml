@@ -1,0 +1,66 @@
+<APPENDIX>(Restrictions and Limitations\limits_appendix)
+<x>(TCP/IP Adapter<xs>limitations)
+<x>(TCP/IP Adapter<xs>restrictions)
+<p>This version of software is has the following restrictios and limitations.
+These restrictions do not necessarily imply that future versions of
+the software will have them.
+<p>Although all effort has been made to make
+the code portable and machine independent,
+this package has not been fully
+implemented or tested under all platforms. Currently; it has been tested with
+PAMS V3.0 on VMS 5.1 - 5.3 with UCX V1.2, Ultrix 3.1, and RISC Ultrix 4.0.
+<x>(C Compiler<xs>VAX C)
+<x>(Ultrix)
+<x>(VMS/Ultrix Connection)
+<x>(PAMS)
+Testing included use of the VAX C compiler and the Ultrix C compiler.
+Although the design should work on non-32 bit systems, no compiling or
+testing on such systems have taken place as of the date of this document.
+The following list details what restrictions exist for this release
+<list>(unnumbered)
+<x>(TCP/IP Adapter<xs>max msg size)
+<le>VMS and ULTRIX have a message size limit of 32k. All other platforms
+have a maximum size limit of 4k. Although there should be sufficient
+internal space in the software, it may be possibe under some circumstances
+to receive a <emphasis>(PAMS__BIGBLKSIZ\bold)
+<x>(PAMS__BIGBLKSIZ)
+error with messages that are below (but
+near) the maximum size limit. This is because the internal TCP/IP messages
+also include the PAMS parameters and header information, and the error
+signifies that the total constructed TCP/IP message exceeded the size
+maximum
+<le>Only the basic set of the <emphasis>(PAMS) commands have been implemented.
+See the <emphasis>(Overview) chapter for details.
+<le><emphasis>(PAMS) AST operations (<code_example>(PAMS_GET_MSGA))
+will not available under this architecture and will return an error.
+<le>Currently, the TCP/IP Adapter Process must be started and already be
+running before a TCP/IP client application attempts communication.
+<le>Only one client connection is allowed to a specific TCP/IP Adapter
+Process at a time. If a connection is active and another client
+requests a connect, the second client's request will be queued and the
+client will "stall" until the previous connection is closed.
+Multiple TCP/IP Adapter Processes on the same host
+system are allowed, provided they use independent port numbers.
+<le>ALL optional <emphasis>(PAMS) arguments in the TCP/IP Adapter API
+must be specified. If an
+argument is not desired, a value zero must be passed
+(this is standard C programming practice,
+but it is also a requirement
+for the TCP/IP API to function correctly).
+<le>Only VMS and Ultrix have been tested to date. Further
+changes to <emphasis>(p_tcpfnc.c\bold) will most likely be required for
+supporting additional operating systems. This is especially true for
+non-32 bit systems and/or systems where the internal bytes
+for integers are stored in a different order than on VAX/VMS.
+<le><emphasis>(PAMS$DEBUG\bold) currently does not enable a debugging
+trace mode in the client application. The application must instead
+set <code_example>(tcpip_debug = TRUE).
+<le>Support is provided only for the C programming language. A
+C language compiler is required for building the client
+application. For VAX/VMS, the compiler 
+must be <emphasis>(VAX C) V3.0 or greater. <emphasis>(VAX C) is not
+required on the host system
+to build the <emphasis>(PAMS_TCPIP_ADAPTER.EXE\bold) image.
+<x>(PAMS_TCPIP_ADAPTER.EXE)
+<endlist>
+<endappendix>

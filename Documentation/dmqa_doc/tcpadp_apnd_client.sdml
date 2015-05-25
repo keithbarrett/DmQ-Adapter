@@ -1,0 +1,405 @@
+<appendix>(Sample TCP/IP Client Listing\client_appendix)
+<code_example>(wide\maximum)
+<LITERAL>
+/*** module SIMPLE_TCPIP_CLIENT "V3.0-00"
+*******************************************************************
+*                                                                 *
+* Copyright (c) 1990                                              *
+* by DIGITAL Equipment Corporation, Maynard, Mass.                *
+*                                                                 *
+* This software is furnished under a license and may be used and  *
+* copied only in accordance with the terms of such license and    *
+* with the inclusion of the above copyright notice. This software *
+* or any other copies thereof may not be provided or otherwise    *
+* made available to any other person. No title to and ownership   *
+* of  the  software  is  hereby transferred.                      *
+*                                                                 *
+* The information in this software is subject to change without   *
+* notice and should not be construed as a commitment by DIGITAL   *
+* Equipment Corporation.                                          *
+*                                                                 *
+* DIGITAL assumes no responsibility for the use or reliability of *
+*  its software on equipment which is not supplied by DIGITAL.    *
+******************************************************************/
+
+/****************************************************************
+*                                                               *
+* VMS PAMS TCPIP client process.                                *
+*                                                               *
+* This program provides an example of a very simplistic client  *
+* process that essentially performs the following functions:    *
+*                                                               *
+*                +---------------------------+                  *
+*                |  Declare Process to PAMS  |                  *
+*                |  using PAMS_DCL_PROCESS   |                  *
+*                +---------------------------+                  *
+*                              |                                *
+*                              V                                *
+*                +---------------------------+                  *
+*                | Initialize Variables, etc.|                  *
+*                +---------------------------+                  *
+*            +---------------->|                                *
+*            |                 V                                *
+*            |   +---------------------------+                  *
+*            |   |   Wait for a message to   |                  *
+*            |   |     be received using     |                  *
+*            |   |       PAMS_GET_MSGW       |                  *
+*            |   +---------------------------+                  *
+*            |                 |                                *
+*            |                 V                                *
+*            |   +---------------------------+                  *
+*            |   |   Send "canned" response  |                  *
+*            |   |  message to client using  |                  *
+*            |   |       PAMS_PUT_MSG        |                  *
+*            |   +---------------------------+                  *
+*            |                 |                                *
+*            +---------<-------+                                *
+*                                                               *
+*                                                               *
+* Unlink standard PAMS clients, this client performs the PAMS   *
+* functions remotely over a network link. Except for some       *
+* additional VMS status return codes possibilities and possible *
+* longer response time involved with including network I/O,     *
+* these functions should be transparent to the calling ap-      *
+* plication. The next diagram show the logic flow:              *
+*                                                               *
+*                +---------------------------+                  *
+*           .-   |   Application program     |                  *
+*           |    +---------------------------+                  *
+*           |                  |                                *
+*           |                  V                                *
+*           |    +---------------------------+                  *
+*   Client -+    |   PAMS function call      |                  *
+*           |    +---------------------------+                  *
+*           |    | Reformat parameters into  |                  *
+*           |    |       a TCP message       |                  *
+*           |    +---------------------------+                  *
+*           |    |   Perform TCP to remote   |                  *
+*           `-   |  adapter process and wait |                  *
+*                +---------------------------+                  *
+*                              \                                *
+*                              /                                *
+*                              V                                *
+*                +---------------------------+                  *
+*           .-   |    Receive TCP message    |                  *
+*           |    +---------------------------+                  *
+*           |    | Reformat message into the |                  *
+*           |    |      PAMS function call   |                  *
+*  TCP/IP   |    +---------------------------+                  *
+*  adapter -+    |   Perform PAMS function   |                  *
+*           |    | and format results into a |                  *
+*           |    |         TCP message       |                  *
+*           |    +---------------------------+                  *
+*           |    |   Perform TCP to remote   |                  *
+*           `-   |       Client and wait     |                  *
+*                +---------------------------+                  *
+*                              \                                *
+*                              /                                *
+*                              V                                *
+*                +---------------------------+                  *
+*           .-   |    Receive TCP message    |                  *
+*           |    +---------------------------+                  *
+*           |    | Reformat message into the |                  *
+*           |    |   PAMS Returned values    |                  *
+*           |    +---------------------------+                  *
+*   Client -+    |   Return to application   |                  *
+*           |    +---------------------------+                  *
+*           |                  |                                *
+*           |                  V                                *
+*           |    +---------------------------+                  *
+*           `-   |   Application program     |                  *
+*                +---------------------------+                  *
+*                                                               *
+*                                                               *
+* To build the CLIENT, you compile your image and link it with  *
+* the P_TCPFNC and P_TCPIP objects (in addition to the C and    *
+* TCP/IP socket libraries). DO NOT LINK WITH PAMS LIBRARIES OR  *
+* OBJECTS.                                                      *
+*                                                               *
+****************************************************************/
+
+/*****************************************************************
+* Module:    Sample TCPIP Client
+*
+* Date:      19-Jul-1990
+*
+* Environment:
+*        UCX V1.2 or higher
+*        VMS 5.1 or higher
+*        Ultrix 3.1 or higher
+*
+* Function:
+*        This program demos and uses a remote PAMS queue via the 
+*        UCX TCP/IP IPC routines.
+*
+*
+* Restrictions:
+*        See documentation.
+*
+* Revisions:
+*
+* 
+*****************************************************************/
+
+        /* Include standard "C" and system definition files. */
+
+#include <errno.h>
+#include <stdio.h>       /* Standard I/O definitions */
+
+#ifdef VMS
+#include <types.h>
+#include <socket.h>
+#include <in.h>
+#include <netdb.h>       /* change to comply with BSD 4.3 */
+#include <inet.h>
+#include <ucx$inetdef.h> /* INET Symbol definitions */
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/uio.h>
+#endif
+
+
+            /* Include PAMS specific definition files. */
+
+#ifdef VMS
+#include pams_c_entry_point       /* PAMS function types       */
+#include pams_c_process           /* Known Process number defs */
+#include pams_c_group             /* Known Group number defs   */
+#include pams_c_type_class        /* Generic Type/Class defs   */
+#include pams_c_return_status_def /* PAMS return status defs   */
+#include pams_c_symbol_def        /* Generic PSEL/DSEL defs    */
+
+#include pams_c_tcpip1            /* TCPIP defs for PAMS       */
+#include pams_c_tcpip2            /* TCPIP defs for PAMS       */
+#else
+#include "p_entry.h"              /* PAMS function declarations*/
+#include "p_proces.h"             /* Known Process # def's     */
+#include "p_group.h"              /* Known Group number defs   */
+#include "p_typecl.h"             /* Generic Type/Class defs   */
+#include "p_return.h"             /* PAMS return status defs   */
+#include "p_aretur.h"             /* remaining PAMS status defs*/
+#include "p_symbol.h"             /* Generic PSEL/DSEL defs    */
+
+#include "p_tcpip1.h"             /* TCPIP defs for PAMS       */
+#include "p_tcpip2.h"             /* TCPIP defs for PAMS       */
+endif
+
+#define do_forever while (1==1)
+#define BUF_SIZE 512               /* Size for local buffers */
+
+
+        /* Define data type for PAMS target/source addresses. */
+
+typedef union
+  {long int      all;
+    struct
+     {short int  process;
+      short int  group;
+     } au;
+  } pams_addr;
+
+
+        /* Declare local variables, pointers, and arrays */
+
+static long int   status;            /* Completion status code */
+static long int   proc_num_req;      /* Requested process #    */
+static pams_addr  proc_num_act;      /* Actual process #       */
+struct psb        psb;               /* PAMS status block      */
+
+        /* Define outbound ("put") message variables and arrays */
+
+static pams_addr  source;            /* Source queue address   */
+static char       put_buffer[BUF_SIZE+1];
+                                     /* Message buf+1 null byte*/
+static short int  put_class;         /* Message class code     */
+static char       put_delivery;      /* Delivery mode          */
+static short int  put_priority;      /* Message priority       */
+static long int   put_resp_que;      /* Response queue         */
+static short int  put_size;          /* Message size           */
+static long int   put_timeout;       /* Timeout for blocked msg*/
+static short int  put_type;          /* Message type code      */
+static char       put_uma;           /* UMA                    */
+
+        /* Define inbound ("get") message variables and arrays */
+
+static pams_addr  target;            /* Target queue address   */
+static char       get_buffer[BUF_SIZE+1];
+                                     /* Message buf+1 null byte*/
+static short int  get_class;         /* Message class code     */
+static short int  get_priority;      /* Message priority       */
+static long int   get_select;        /* Message selection mask */
+static short int  get_size;          /* Message size           */
+static long int   get_timeout;       /* Timeout for blocked msg*/
+static short int  get_type;          /* Message type code      */
+
+
+
+main(argc,argv)
+int  argc;
+char **argv;
+{
+        short  msg_area_size = BUF_SIZE+1;
+
+        if (argc != 3 )
+        {
+            printf("?Host or port specification missing.\n");
+            printf("Usage: client hostname portnumber.\n");
+            printf("Note: hostname should be in quotes.\n");
+            exit();
+        }
+        else
+        {
+            if ((adapter_port = atoi(argv[2])) == 0)
+            {
+                printf("Port number cannot be zero\n");
+                exit();
+            }
+            adapter_host = argv[1];
+        }
+        /* Examine and use passed parameters for host and port */
+
+             /**********************************************/
+             /*          Initialization Section            */
+             /*                          - - - - -         */
+             /* Declare our process to PAMS and initialize */
+             /**********************************************/
+
+   printf ("\n\nTCPIP Client Process Example\n");
+
+   /*  Call pams_dcl_process to attach to ourself to the PAMS  */
+   /*  message bus, and assign our process (queue) number.     */
+
+   proc_num_req = 0;
+   status = pams_dcl_process (&proc_num_req, &proc_num_act,
+       0,0,0,0);
+
+   if (status != PAMS__SUCCESS)
+      {
+        printf ("Error returned by PAMS_DCL_PROCESS '%d'\n",
+              status);
+        exit (status);
+        }
+
+
+   printf ("\n Process number is '%d.%d'\n\n",
+       proc_num_act.au.group, 
+       proc_num_act.au.process);
+
+
+
+   /* Init variables that we will be using for messaging. */
+
+   get_priority = 0;                /* Receive all messages */
+   get_timeout  = 600;              /* 60 sec timeout on rcv*/
+   get_select   = 0;                /* No special selection */
+   put_class    = 1;                /* Send class 1 message */
+   put_priority = 0;                /* Send at standard pri */
+   put_resp_que = 0;                /* Response que; default*/
+   put_type     = -123;             /* Msg type user defined*/
+   put_timeout  = 0;                /* Accept standard tmo  */
+   put_delivery = PDEL_MODE_NN_MEM; /* No notify, memory que*/
+   put_uma      = PDEL_UMA_DISC;    /* Discard UMA          */
+
+   target.all = proc_num_act.all;   /* send to ourselves */
+
+   do_forever
+   {
+   /* Clear type-ahead buffer, then prompt for and read the
+      message. If <CTRL-Z> pressed (EOF), we are done, break
+      out of the loop. */
+
+      fflush (stdin);
+      printf ("\n\nEnter message or generate an EOF to exit...\n   >");
+      if (gets(put_buffer) == '\0') break;
+
+      /* Set put message size to buffer length +1 */
+
+      put_size = strlen(put_buffer)+1;
+
+      if (put_size <= msg_area_size)
+      {
+      /* Send the message to the target process queue.
+         If an error is returned, report it and exit,
+         otherwise display class & type. */
+
+
+            status = pams_put_msg (put_buffer, &put_priority,
+                             &target.all,
+                             &put_class, &put_type,
+                             &put_delivery,
+                             &put_size,
+                             &put_timeout, &psb, &put_uma,
+                             &put_resp_que); 
+ 
+            if (status != PAMS__SUCCESS)
+            {
+                printf ("Error returned by PAMS_PUT_MSG code=%d\n",
+                     status);
+                exit (status);
+            }        
+
+            printf ("\n  CLIENT: Sent Msg to %d.%d class='%d',
+                        type='%d'\n",
+                target.au.group, target.au.process, 
+                put_class, put_type);
+
+           /* Now wait for the adapter process to send the reply
+              If timeout error, report it and continue. If other
+              error, report it and exit.  Else, display */
+
+            status = pams_get_msgw (get_buffer, &get_priority,
+                              &source.all,
+                              &get_class, &get_type,
+                              &msg_area_size,
+                              &get_size, 
+                              &get_timeout, &get_select, &psb,
+                              0, 0, 0, 0); 
+
+            if (status == PAMS__TIMEOUT)
+                printf ("PAMS_GET_MSGW Timeout\n");
+
+            else if (status != SS$_NORMAL)
+            {
+                printf ("Error returned by PAMS_GET_MSGW code=%d\n", 
+                        status);
+                exit (status);
+            }
+            else
+            {
+              printf("\nCLIENT: Received from %d.%d class='%d', type='%d'\n",
+                  source.au.group, source.au.process, 
+                  get_class, get_type);
+              printf ("           Message='%s'\n", get_buffer);
+            }
+       }
+       else
+            printf("input exceeds buffer max of %d charactes\n",
+                msg_area_size);
+   }
+                /*  End of Main Processing Loop  */
+
+      /************************************************/
+      /*                 EXIT Routine                 */
+      /*                   - - - -                    */
+      /*  User pressed <CTRL-Z>.  Clean-up and exit.  */
+      /************************************************/
+
+      /* If the adapter process was started, then use the
+         system() function to stop the adapter process using
+         the DCL STOP command. */
+
+      /* Tell the user we're done, then exit. */
+
+   status = pams_exit();
+
+   printf ("\n\nSIMPLE_TCPIP_CLIENT - Done\n");
+   exit (SS$_NORMAL);
+}
+<ENDLITERAL>
+<endcode_example>
+<endappendix>
+

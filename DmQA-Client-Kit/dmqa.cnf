@@ -1,0 +1,24 @@
+
+# This is a configuration file for the DECmessageQ Queue Adapter. It is used to
+# automatically fill in the global variables. The name of this file is defined
+# in the p_dmqa.h include file. lines are of the form "keyword=value", where
+# "keyword" is the global item to set, and "value" is the value to assign.
+# Keywords may be upper or lower case, values may be case dependent depending
+# on the item.
+#
+# Blank lines and lines starting with "#" are ignored. Other lines cannot have
+# leading or embeded spaces. Keywords are "debug", "host", and "port".
+#
+# Suggestion: If setting "debug", this paramter should be first to enable
+# debug mode as early as possible.
+
+#debug=1
+host=xhost
+port=4096
+
+#secondary_host			Not yet supported
+#secondary_port			Not yet supported
+#trans_from_EBCDIC		Not yet supported
+#trans_to_EBCDIC		Not yet supported
+
+#end of file

@@ -1,0 +1,24 @@
+#!/bin/sh5
+
+C_FLAGS    = -O
+
+all:			dmqatest
+
+dmqatest:		dmqatest.o dmqa_api.o dmqa_tso.o dmqpp.o dmqin.o
+			cc -o dmqatest dmqatest.o dmqa_api.o dmqa_tso.o dmqpp.o dmqin.o
+
+dmqatest.o:		dmqatest.c
+			cc -c $(C_FLAGS) dmqatest.c
+
+dmqa_api.o:		dmqa_api.c
+			cc -c $(C_FLAGS) dmqa_api.c
+
+dmqa_tso.o:		dmqa_tso.c
+			cc -c $(C_FLAGS) dmqa_tso.c
+
+dmqpp.o:		dmqpp.c
+			cc -c $(C_FLAGS) dmqpp.c
+
+dmqin.o:		dmqin.c
+			cc -c $(C_FLAGS) dmqin.c
+

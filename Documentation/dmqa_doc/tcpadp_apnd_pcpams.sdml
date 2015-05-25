@@ -1,0 +1,18 @@
+<appendix>(PC-PAMS Compatibility\PCPAMS_APPENDIX)
+<x>(PAMS<xs>PC-PAMS)
+<x>(PAMS<xs>compatibility)
+<p>Early releases of <emphasis>(PC-PAMS) had a different <EMPHASIS>(PSB\BOLD)
+and other definitions than all other implementations of
+<emphasis>(PAMS). The include files provided with the TCP/IP Queue Adapter
+are "supersets" and should be used in place of the files provided in the
+<emphasis>(PC-PAMS) releases. These new include files are capable of
+generating either type of structures, depending on the setting of
+the <emphasis>(GEN_PAMS_V1\bold) definition in the file.
+<emphasis>(GEN_PAMS_V1\bold) defaults to building the compatible structures.
+<x>(GEN_PAMS_V1)
+
+<p>Client applications written for early releases of <emphasis>(PC-PAMS) will
+need modification for use on other operating systems or with the TCP/IP
+Adapter. The changes concern modifying the variable names for the elements of
+the <emphasis>(psb) and others to match those defined in the include file.
+<endappendix>

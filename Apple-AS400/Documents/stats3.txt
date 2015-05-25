@@ -1,0 +1,44 @@
+test #3
+
+One 3100 process communicating to a process on a DIFFERENT 3100, both
+processes using the DmQA. Results are for roundtrip messages.
+
+message_length?                             :1000
+Send recoverable messages? 0 = no, 1 = yes  :
+Test iterations? 0 = loop forever           :5000
+<CR> to start:
+  7 sec Total rcvd:     200     Incr:   100     14.286/sec
+ 10 sec Total rcvd:     343     Incr:   143     14.300/sec
+ 10 sec Total rcvd:     486     Incr:   143     14.300/sec
+ 10 sec Total rcvd:     629     Incr:   143     14.300/sec
+  9 sec Total rcvd:     772     Incr:   143     15.889/sec
+ 11 sec Total rcvd:     931     Incr:   159     14.455/sec
+ 10 sec Total rcvd:     1076    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1221    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1366    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1511    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1656    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1801    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     1946    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2091    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2236    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2381    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2526    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2671    Incr:   145     14.500/sec
+ 10 sec Total rcvd:     2816    Incr:   145     14.500/sec
+  9 sec Total rcvd:     2961    Incr:   145     16.111/sec
+ 11 sec Total rcvd:     3122    Incr:   161     14.636/sec
+ 10 sec Total rcvd:     3268    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     3414    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     3560    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     3706    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     3852    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     3998    Incr:   146     14.600/sec
+ 10 sec Total rcvd:     4144    Incr:   146     14.600/sec
+  9 sec Total rcvd:     4290    Incr:   146     16.222/sec
+ 11 sec Total rcvd:     4452    Incr:   162     14.727/sec
+ 10 sec Total rcvd:     4599    Incr:   147     14.700/sec
+ 10 sec Total rcvd:     4746    Incr:   147     14.700/sec
+ 10 sec Total rcvd:     4893    Incr:   147     14.700/sec
+
+Test done: sent:5000 rcvd:5000 rate:14.620/sec

@@ -1,0 +1,55 @@
+<appendix>(Sample <emphasis>(tcpip_debug\bold) Output\debug_appendix)
+<p>The following is an example of output produced by setting
+<code_example>(tcpip_debug = TRUE).
+<code_example>
+<literal>
+
+SIMPLE_TCPIP_CLIENT - SIMPLE TCPIP Client Process Example
+
+PAMS_TCPIP: Entering TCPIP_SEND routine
+PAMS_TCPIP: message sent, status/bytecount = 34
+
+PAMS_TCPIP: Entering TCPIP_RECEIVE; awaiting msg...
+PAMS_TCPIP: received msg from client; packetsize = 26
+PAMS_TCPIP: received msg of 26 bytes
+
+   Process number is '600.202'
+
+   Enter message or generate an EOF (CTRL/Z on VMS) to exit...
+   > hello
+
+PAMS_TCPIP: Entering TCPIP_SEND routine
+PAMS_TCPIP: message sent, status/bytecount = 33
+
+PAMS_TCPIP: Entering TCPIP_RECEIVE; awaiting msg...
+PAMS_TCPIP: received msg from client; packetsize = 44
+PAMS_TCPIP: received msg of 44 bytes
+
+   CLIENT: Sent Msg to 600.202 class='1', type='-123'
+
+PAMS_TCPIP: Entering TCPIP_SEND routine
+PAMS_TCPIP: message sent, status/bytecount = 25
+
+PAMS_TCPIP: Entering TCPIP_RECEIVE; awaiting msg...
+PAMS_TCPIP: received msg from client; packetsize = 60
+PAMS_TCPIP: received msg of 60 bytes
+
+   CLIENT: Received from 600.202  class='1', type='-123'
+           Message='hello'
+
+   Enter message or generate an EOF (CTRL/Z on VMS) to exit...
+   >
+
+PAMS_TCPIP: Entering TCPIP_SEND routine
+PAMS_TCPIP: message sent, status/bytecount = 6
+
+PAMS_TCPIP: Entering TCPIP_RECEIVE; awaiting msg...
+PAMS_TCPIP: received msg from client; packetsize = 10
+PAMS_TCPIP: received msg of 10 bytes
+
+PAMS_TCPIP: Entering TCPIP_SHUTDOWN routine
+
+SIMPLE_TCPIP_CLIENT - Done
+<endliteral>
+<endcode_example>
+<endappendix>

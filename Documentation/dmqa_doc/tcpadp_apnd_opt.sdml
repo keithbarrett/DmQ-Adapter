@@ -1,0 +1,20 @@
+<appendix>(Sample Listing of <emphasis>(PAMS_TCPIP.OPT\bold)\opt_appendix)
+<p>The following is a copy of the options file for linking VMS client
+applications with the TCP/IP Adapter API.
+<code_example>
+!  +---------------------------------------------+
+!  | General Purpose VAX PAMS TCP/IP Adapter     |
+!  |          Linker Options File                |
+!  |                                             |
+!  | File:  PAMS$LIB:PAMS_TCPIP.OPT              |
+!  +---------------------------------------------+
+!
+     PAMS$LIB:PAMS_TCPIP.OLB/LIB
+     SYS$LIBRARY:UCX$IPC.OLB/LIB
+     SYS$SHARE:VAXCRTL.EXE/SHARE
+!
+!----------- end of PAMS_TCPIP.OPT --------------------
+!
+<endcode_example>
+<endappendix>
+

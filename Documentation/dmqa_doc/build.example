@@ -1,0 +1,10 @@
+<code_example>
+$ @PAMS$TCPIP_ADAPTER:PAMS$BUILD_TCPIP_ADP
+
+Building TCP/IP Queue Adapter image...
+%COPY-S-COPIED, PAMS_TCPIP_ADAPTER.EXE;1 copied to DISK$PMB:[PA
+MSV30.EXE]PAMS_TCPIP_ADAPTER.EXE;3 938 blocks)
+TCP/IP Queue Adapter build completed
+
+$
+<endcode_example>

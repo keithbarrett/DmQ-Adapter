@@ -1,0 +1,24 @@
+message_length?                             :40
+Send recoverable messages? 0 = no, 1 = yes  :
+Test iterations? 0 = loop forever           :5000
+<CR> to start:
+003 sec Total rcvd:     200     Incr:   100     33.333/sec
+013 sec Total rcvd:     533     Incr:   333     25.615/sec
+010 sec Total rcvd:     789     Incr:   256     25.600/sec
+010 sec Total rcvd:     1045    Incr:   256     25.600/sec
+009 sec Total rcvd:     1301    Incr:   256     28.444/sec
+011 sec Total rcvd:     1585    Incr:   284     25.818/sec
+009 sec Total rcvd:     1843    Incr:   258     28.667/sec
+011 sec Total rcvd:     2130    Incr:   287     26.091/sec
+009 sec Total rcvd:     2391    Incr:   261     29.000/sec
+011 sec Total rcvd:     2681    Incr:   290     26.364/sec
+010 sec Total rcvd:     2945    Incr:   264     26.400/sec
+009 sec Total rcvd:     3209    Incr:   264     29.333/sec
+011 sec Total rcvd:     3502    Incr:   293     26.636/sec
+010 sec Total rcvd:     3768    Incr:   266     26.600/sec
+010 sec Total rcvd:     4034    Incr:   266     26.600/sec
+009 sec Total rcvd:     4300    Incr:   266     29.556/sec
+011 sec Total rcvd:     4596    Incr:   296     26.909/sec
+010 sec Total rcvd:     4865    Incr:   269     26.900/sec
+
+Test done: sent:5000 rcvd:5000 rate:27.027/sec

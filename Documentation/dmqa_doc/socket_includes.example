@@ -1,0 +1,51 @@
+<code_example>
+#include <errno.h>
+#include <stdio.h>
+
+
+       	/* Include TCP/IP Socket library files */
+
+#ifdef VMS
+#include <types.h>
+#include <socket.h>
+#include <in.h>
+#include <netdb.h>        /* change to comply with BSD 4.3 */
+#include <inet.h>
+#include <ucx$inetdef.h>  /* INET Symbol definitions */
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <sys/uio.h>
+#endif
+
+
+        /* Include PAMS specific definition files. */
+
+#ifdef VMS
+#include pams_c_entry_point       /* PAMS func type declarations */
+#include pams_c_process           /* Known Process number def's. */
+#include pams_c_group             /* Known Group number defs     */
+#include pams_c_type_class        /* Generic Type/Class defs     */
+#include pams_c_return_status_def /* PAMS Func return status defs*/
+#include pams_c_symbol_def        /* Generic PSEL/DSEL defs      */
+
+#include pams_c_tcpip1.h          /* TCPIP definitions for PAMS  */
+#include pams_c_tcpip2.h          /* TCPIP definitions for PAMS  */
+
+#else
+
+#include "p_entry.h"              /* PAMS func type declarations */
+#include "p_proces.h"             /* Known Process number def's. */
+#include "p_group.h"              /* Known Group number defs     */
+#include "p_typecl.h"             /* Generic Type/Class defs     */
+#include "p_return.h"             /* PAMS Func return status defs*/
+#include "p_aretur.h"             /* remaining PAMS status defs  */
+#include "p_symbol.h"             /* Generic PSEL/DSEL defs      */
+
+#include "p_tcpip1.h"             /* TCPIP definitions for PAMS  */
+#include "p_tcpip2.h"             /* TCPIP definitions for PAMS  */
+#endif
+<endcode_example>

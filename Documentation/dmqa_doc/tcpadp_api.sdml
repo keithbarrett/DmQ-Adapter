@@ -1,0 +1,152 @@
+<CHAPTER>(TCP/IP Adapter API\API)
+<y>(Message Bus - see "PAMS")
+<x>(TCP/IP Adapter API\begin)
+<page>
+<head1>(Description)
+<x>(TCP/IP Adapter API<xs>description)
+<P>The TCP/IP Adapter API is used in place of the message bus functions and
+must be installed on the client's computer system. The TCP/IP API
+requires TCP/IP communication socket functions and a <emphasis>(C\bold)
+language compiler.
+<x>(C Compiler)
+<head1>(TCP/IP Socket Communication files)
+<x>(TCP/IP Sockets)
+<p>You will need to locate the functions and include files on the
+client's computer system that support the TCP/IP socket communications. The
+include files needed are shown in <reference>(inc_table). These files contain
+different structures and definitions per operating system;
+<emphasis>(DO NOT COPY OR USE THE TCP/IP SOCKET INCLUDE FILES OF ONE
+OPERATING SYSTEM ON ANOTHER\bold).
+<table>(TCP/IP Socket communication include files needed\inc_table)
+<x>(TCP/IP Sockets<xs>include files)
+<table_attributes>(multipage)
+<table_setup>(3\9\20\28)
+<table_heads>(File\Ultrix/Unix Filename\VMS Filename (VMS/Ultrix Connection))
+<x>(VMS/Ultrix Connection)
+<table_row>(types.h\sys/types.h\SYS$LIBRARY:TYPES.H)
+<table_row>(socket.h\sys/socket.h\SYS$LIBRARY:SOCKET.H)
+<table_row>(in.h\netinet/in.h\SYS$LIBRARY:IN.H)
+<table_row>(netdb.h\netdb.h\SYS$LIBRARY:NETDB.H)
+<table_row>(inet.h\arpa/inet.h\SYS$LIRBARY:INET.H)
+<table_row>((uio def)\sys/uio.h\SYS$LIBRARY:UCX$INETDEF.H)
+<endtable>
+<cp>If the client is to be run under VMS, the <emphasis>(VMS/Ultrix Connection)
+product will be required.
+<note>(Warning)If you are using <emphasis>(VAX C) version 3.0 or higher and
+<emphasis>(VMS/Ultrix Connection) version 1.2 together, a structure change to
+<x>(C Compiler<xs>VAX C)
+one of the include files may be required. Consult the
+<emphasis>(VMS/Ultrix Connection Release Notes) for details.
+The TCP/IP Adapter API will not
+function correctly without this modification if it is required.
+<endnote>
+<head1>(TCP/IP Adapter API files)
+<x>(TCP/IP Adapter API<xs>include files)
+<p>The TCP/IP Adapter API consists of the following files for non-VMS
+systems that need to be copied to the client's system:
+<list>(unnumbered)
+<le><emphasis>(PAMS$TCPIP_ADAPTER:*.h\bold) - This includes:
+<list>(unnumbered)
+<y>(PAMS_C_TCPIP1<xs>see also "p_tcfpip1.h")
+<y>(PAMS_C_TCPIP2<xs>see also "p_tcfpip2.h")
+<le><emphasis>(p_tcpip1.h\bold)<x>(p_tcpip1.h)
+<le><emphasis>(p_tcpip2.h\bold)<x>(p_tcpip2.h)
+<le><emphasis>(p_entry.h\bold)<x>(p_entry.h)
+<le><emphasis>(p_process.h\bold)<x>(p_proces.h)
+<le><emphasis>(p_group.h\bold)<x>(p_group.h)
+<le><emphasis>(p_typecl.h\bold)<x>(p_typecl.h)
+<le><emphasis>(p_return.h\bold)<x>(p_return.h)
+<le><emphasis>(p_aretur.h\bold)<x>(p_aretur.h)
+<le><emphasis>(p_symbol.h\bold)<x>(p_symbol.h)
+<LE><emphasis>(sbs_msg_def.h\bold)<x>(sbs_msg_def.h)
+<le><emphasis>(availmsg.h\bold)<x>(availmsg.h)
+<endlist>
+<le><emphasis>(PAMS$TCPIP_ADAPTER:*.C\bold) - This includes:
+<x>(PAMS$TCPIP_ADAPTER:)
+<list>(unnumbered)
+<le><emphasis>(p_tcpfnc.c\bold) - TCP/IP Adapter Communications API.
+<x>(TCP/IP Adapter API<xs>p_tcpfnc.c)
+<le><emphasis>(p_tcpip.c\bold) - TCP/IP Adapter
+<x>(TCP/IP Adapter API<xs>p_tcpip.c)
+<emphasis>(PAMS) enpty point API
+<x>(PAMS)
+<endlist>
+<le><emphasis>(samp_tcp.c\bold) and <emphasis>(tcptest.c\bold) -
+<x>(tcptest.c)
+<x>(samp_tcp.c)
+Sample client and TCP/IP Adapter API test program (located in
+subdirectory of <emphasis>(PAMS$EXAMPLES\bold)).
+<x>(PAMS$EXAMPLES)
+<endlist>
+<cp>Clients on VMS only need the following files
+<x>(Client Applications)
+<x>(VAX/VMS)
+in <emphasis>(PAMS$LIB:\bold):
+<x>(PAMS$LIB)
+<list>(unnumbered)
+<le><emphasis>(PAMS_TCPIP.TLB\bold) - TCP/IP Adapter include files.
+<x>(PAMS_TCPIP.TLB)
+<le><emphasis>(PAMS.TLB\bold) - <emphasis>(PAMS) include files.
+<x>(PAMS.TLB)
+<le><emphasis>(PAMS_TCPIP.OLB\bold) - The TCP/IP Adapter API routines.
+<x>(PAMS_TCPIP.OLB)
+<le><emphasis>(PAMS_TCPIP.OPT\bold) - Link options file
+<y>(TCP/IP Adapter API<xs>library - see "PAMS_TCPIP.OLB")
+<x>(PAMS_TCPIP.OPT)
+<y>(PAMS_TCPIP.OPT<xs>see also "Linking")
+<endlist>
+<head1>(Compiling the TCP/IP API functions)
+<x>(TCP/IP Adapter API<xs>compiling)
+<p>The source files <emphasis>(p_tcpfnc.c\bold) and <emphasis>(p_tcpip.c\bold)
+<x>(TCP/IP Adapter API<xs>p_tcpfnc.c)
+<x>(TCP/IP Adapter API<xs>p_tcpip.c)
+need to be compiled into object files that later can be linked into the
+client application. These files have been coded for portability and should
+compile without modification on <EMPHASIS>(VMS, Ultrix),
+and most other operating systems.
+If modifications are required, changes should be kept to a minimum and be
+as simple and
+straight-forward as possible. Changes should be made with "backward
+compatibility" in mind, possibly by using <code_example>(#ifdef) and
+<code_example>(#ifndef) statements around code changes.
+<note>(Note)Modifications must be restricted to the
+<x>(TCP/IP Adapter API<xs>modification of)
+<emphasis>(p_tcpip.c, p_tcpfnc.c, p_tcpip1.h\bold), and
+<x>(p_tcpip1.h)
+<x>(p_tcpip2.h)
+<emphasis>(tcpip2.h\bold) files.
+No changes should be made to any
+other TCP/IP Adapter include file (*.h), as it will inhibit code portability
+and may inhibit or alter <emphasis>(PAMS) functionality. Modified versions of
+<emphasis>(p_tcpip1.h\bold) and <emphasis>(p_tcpip2.h\bold)
+should also be replaced in
+the VMS <emphasis>(PAMS$LIB:PAMS_TCPIP.TLB\bold) text library as modules
+<x>(PAMS$LIB)
+<x>(PAMS_TCPIP.TLB)
+<emphasis>(PAMS_C_TCPIP1\bold) and <emphasis>(PAMS_C_TCPIP2\bold).
+<x>(PAMS_C_TCPIP1)
+<x>(PAMS_C_TCPIP2)
+<endnote>
+<cp>Under VMS, it should only be necessary to use or copy the four
+<x>(VAX/VMS)
+PAMS$LIB: files listed in the previous section.
+<x>(PAMS$LIB)
+If circumstance demands that the TCP/IP Adapter API
+functions do require re-compiling from the source files in
+<emphasis>(PAMS$TCPIP_ADAPTER:\bold), <reference>(api_rebuild) shows how
+<x>(PAMS$TCPIP_ADAPTER:)
+to recompile and replace the library functions. Note that if the
+TCP/IP Adapter API functions are rebuilt, it may be necessary to also
+rebuild the TCP/IP Adapter Process.
+<note>(Warning)
+The <emphasis>(PAMS_TCPIP.OLB\bold) library file also contains the binary
+<x>(PAMS_TCPIP.OLB)
+image of the TCP/IP Adapter Process. Do NOT rebuild the library by
+deleting the original without first extracting the TCP/IP Adapter Process
+module.
+<endnote>
+<example>(Rebuilding the VMS TCP/IP API library modules\api_rebuild)
+<example_attributes>(wide)
+<example_file>(api_rebuild.example)
+<endexample>
+<x>(TCP/IP Adapter API\end)

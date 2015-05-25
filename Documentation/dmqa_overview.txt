@@ -1,0 +1,135 @@
+
+          DECmessageQ Queue Adapter Overview
+          _______________________________________________________________
+
+
+   1.1    Abstract
+
+          This document describes the "DECmessageQ Queue Adapter"
+          (also referred to in this document as "DmQA"); a
+          software package that provides the DECmessageQ
+          PAMS API (Application Programming Interface) to
+          foreign platforms. With minimal changes, portable
+          DECmessageQ applications can use the DmQA to access
+          the message bus on a host DECmessageQ/VMS system.
+          DmQA applications can communicate with DECmessageQ
+          applications, or other DmQA applications on the same
+          system or on other systems.
+
+          The DmQA acts as a remote interface and uses a
+          Client/Server architecture. User applications
+          referencing the DECmessageQ services are linked
+          with the DmQA Client Functions. The DmQA Client
+          Functions are written in portable C code and contain
+          the DECmessageQ PAMS API. When an application call a
+          DECmessageQ service, the DmQA Client Functions take
+          the passed information and send it to the DmQA Server
+          Process running on a host DECmessageQ/VMS system. The
+          DmQA Server performs the service call, and returns the
+          resulting information back to the user application. To
+          the user application it appears as if the PAMS service
+          was performed locally, when in fact it was performed
+          on the remote DECmessageQ system.
+
+	  The DmQA Supports the following DECmessageQ PAMS services:
+
+	  PAMS_ATTACH_Q      PAMS_PUT_MSG	  PAMS_GET_MSG
+	  PAMS_GET_MSGW	     PAMS_EXIT		  PAMS_CONFIRM_MSG
+	  PAMS_SET_SELECT    PAMS_CANCEL_SELECT   PAMS_LOCATE_Q
+
+
+
+   1.2    Supported Systems
+
+          Currently, the DmQA supports TCP/IP connections only.
+          This support comes for platforms that provide the
+          TCP/IP Socket programming Interface (VMS, UNIX,
+          ULTRIX, etc). Other platforms may be available;
+          contact DIGITAL for further information.
+
+          The DmQA communications routines are isolated
+          from the upper code layers and are designed to be
+          easily replaced for supporting other systems or
+          communications mechanisms.
+
+
+
+   1.3    Features and Advantages
+
+          o  Provides the DECmessageQ services on foreign
+             systems not currently supported by DECmessageQ.
+
+
+          o  Provides the DECmessageQ services on systems
+             connected by TCP/IP communications.
+
+          o  Provides features of DECmessageQ/VMS that are not
+             currently available in other DECmessageQ products:
+
+             o  Messages up to 32k in length (providing the
+                remote system has the resources, such as memory,
+                for declaring character arrays that large).
+
+             o  Access to DECmessageQ services currently
+		available only in DECmessageQ/VMS:
+
+		PAMS_CONFIRM_MSG, PAMS_SET_SELECT, PAMS_CANCEL_SELECT
+                and PAMS_LOCATE_Q
+
+             o  Full message recovery
+
+             o  Secondary and Multi-reader queues
+
+             o  Named queues
+
+             o  DNS (Digital Named Services)
+
+             o  All delivery modes and recovery actions
+                available
+
+             o  Multiple groups per system
+
+             o  Access to the DMQ$DEBUG logical to aid in
+                program debugging.
+
+          o  Communications routines are isolated from upper
+             code layers. Support for other platforms can be
+             written more quickly and easily.
+
+ 
+   1.4    Disadvantages and Limitations
+
+          The DmQA is not designed to be a substitute for
+          any DECmessageQ product, but rather as a method for
+          integrating other platforms or communications methods,
+          or for accessing a needed feature of DECmessageQ/VMS
+          not available otherwise.
+
+          o  There is currently no local SAF (store-and-forward)
+             file support. A communications link to the host
+             DECmessageQ/VMS system must be successfully
+             established before message exchange will take
+             place.
+
+          o  Each online application creates a process on the
+             host DECmessageQ/VMS system, therefore requiring
+             resources from that system.
+
+          o  On DECmessageQ supported systems, the DmQA may have
+             a lower message throughput rate than the supported
+             DECmessageQ product for that platform.
+
+
+
+   1.5    Basic Requirements
+
+          At a minimum, systems running DmQA applications must
+          have functioning TCP/IP communications to a host
+          DECmessageQ/VMS system, support the C programming
+          language, and support the TCP/IP socket call interface
+          (Ultrix, Unix, VMS, etc.), Digital's DECmessageQ/VMS and
+	  VMS/Ultrix Connection products are required on all host
+	  VMS systems running DmQA servers.
+
+
+[end of text]

@@ -1,0 +1,42 @@
+Test #5
+
+RISC Ultrix process to another RISC ultrix process on the same CPU,
+throu a DmQA on a VMS system. All CPUs are 3100's. Stats are for
+roundtrip messages.
+
+message_length?                             :1000
+Send recoverable messages? 0 = no, 1 = yes  :
+Test iterations? 0 = loop forever           :5000
+<CR> to start:
+006 sec Total rcvd:     200     Incr:   100     16.667/sec
+011 sec Total rcvd:     367     Incr:   167     15.182/sec
+009 sec Total rcvd:     519     Incr:   152     16.889/sec
+010 sec Total rcvd:     688     Incr:   169     16.900/sec
+010 sec Total rcvd:     857     Incr:   169     16.900/sec
+011 sec Total rcvd:     1026    Incr:   169     15.364/sec
+009 sec Total rcvd:     1180    Incr:   154     17.111/sec
+010 sec Total rcvd:     1351    Incr:   171     17.100/sec
+011 sec Total rcvd:     1522    Incr:   171     15.545/sec
+009 sec Total rcvd:     1677    Incr:   155     17.222/sec
+011 sec Total rcvd:     1849    Incr:   172     15.636/sec
+009 sec Total rcvd:     2005    Incr:   156     17.333/sec
+011 sec Total rcvd:     2178    Incr:   173     15.727/sec
+009 sec Total rcvd:     2335    Incr:   157     17.444/sec
+011 sec Total rcvd:     2509    Incr:   174     15.818/sec
+010 sec Total rcvd:     2667    Incr:   158     15.800/sec
+009 sec Total rcvd:     2825    Incr:   158     17.556/sec
+011 sec Total rcvd:     3001    Incr:   176     16.000/sec
+010 sec Total rcvd:     3161    Incr:   160     16.000/sec
+009 sec Total rcvd:     3321    Incr:   160     17.778/sec
+011 sec Total rcvd:     3499    Incr:   178     16.182/sec
+010 sec Total rcvd:     3661    Incr:   162     16.200/sec
+010 sec Total rcvd:     3823    Incr:   162     16.200/sec
+010 sec Total rcvd:     3985    Incr:   162     16.200/sec
+009 sec Total rcvd:     4147    Incr:   162     18.000/sec
+011 sec Total rcvd:     4327    Incr:   180     16.364/sec
+010 sec Total rcvd:     4491    Incr:   164     16.400/sec
+010 sec Total rcvd:     4655    Incr:   164     16.400/sec
+010 sec Total rcvd:     4819    Incr:   164     16.400/sec
+010 sec Total rcvd:     4983    Incr:   164     16.400/sec
+
+Test done: sent:5000 rcvd:5000 rate:16.393/sec

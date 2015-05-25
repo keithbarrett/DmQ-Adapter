@@ -1,0 +1,39 @@
+<code_example>
+
+PAMS TCPIP Client test program
+Performing test message...
+
+Client V3.0-02, protocol revision 2
+Client's TCP/IP msg size maximum is 32767
+Client's  PAMS  msg size maximum is 32000
+
+Remote Adapter's information
+
+   Protocol Rev: 2
+   Ident string: V3.0-02
+   OS ident val: 1
+   PSB length  : 32  (ours is 32)
+   Retrn status: 1
+
+   Process number is '600.201'
+
+   Enter message or generate EOF (CTRL/Z on VMS) to exit...
+
+   > HELLO
+
+   CLIENT: Sent Msg to 600.201 class='1', type='-123'
+type of psb = 1
+call dependant = 0
+del_psb_status = 1
+seq_number = 13173336, 0
+uma_psb_status = 136151171
+
+   CLIENT: Received from 600.201  class='1', type='-123'
+           Message='HELLO'
+
+   Enter message or generate EOF (CTRL/Z on VMS) to exit...
+   >
+
+
+SIMPLE_TCPIP_CLIENT - Done
+<endcode_example>

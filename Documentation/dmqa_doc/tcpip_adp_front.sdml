@@ -1,0 +1,50 @@
+<front_matter>(front)
+<title_page>
+<TITLE>(PAMS <line>TCP/IP Queue Adapter)
+<ABSTRACT>(Novmber 1990)
+This document describes the features, restrictions, and use of the
+PAMS TCP/IP Queue Adapter for providing PAMS functionality on
+TCP/IP connected systems.
+<ENDABSTRACT>
+<revision_info>(Revision/Update Information:\This is a new document.)
+<revision_info>(Operating System and Version:\VAX/VMS V5.2 or higher
+ <line>ULTRIX V3.0 or higher)
+<revision_info>(Software Version:\VAX PAMS V2.5
+ <line>VMS/Ultrix Connection V1.2 or higher)
+<endtitle_page>
+
+<copyright_page>
+<copyright_page_formatting>(controlled)
+<print_date>(October 1990)
+<p>
+The information is this document is subject to change without
+notice and should not be construed as a commitment by 
+Digital Equipment Corporation.  Digital Equipment Corporation
+assumes no responsibility for any errors that may appear 
+in this document.
+<p>
+The software described in this document is furnished under a
+license and may be used or copied only in accordance with the
+terms of such license.
+<p>
+No responsibility is assumed for the use or reliability of
+software on equipment that is not supplied by Digital 
+Equipment Corporation or its affiliated companies.
+
+<copyright_date>(1990\DIGITAL Equipment Corporation)
+<p>All Rights Reserved
+<line>Printed in U.S.A.
+<line>(bigskip)
+The following are trademarks of DIGITAL Equipment Corporation:
+<table>
+<table_setup>(3\24\24)
+<table_row>(VAX                   \VMS                   \ULTRIX)
+<table_row>(VAXcluster            \DECnet                \DEC)
+<table_row>(VMS/ULTRIX Connection \                      \<dec_logo>)
+<endtable>
+<p>
+Ethernet is a registered trademark of Xerox Corporation.
+<p>
+UNIX is a registered trademark of AT&T in the USA and other countries.
+<endcopyright_page>
+<endfront_matter>

@@ -1,0 +1,348 @@
+.figure 5
+.c; PAMS TCP/IP Adapter
+.skip
+.c; PRELIMINARY RELEASE
+.c; 25-Sep-1990
+.skip 40
+Digital Equipment Corp.
+.br
+PAMS Resource Center
+.page
+.i
+This document describes the PAMS VMS TCP/IP Adapter, a software component that
+allows a client running on a remote system without PAMS
+to perform limited PAMS functionality
+via TCP/IP communications.
+.skip
+The information in this software is subject to change  without  notice
+and  should  not  be  construed  as  a commitment by DIGITAL Equipment
+Corporation.
+
+DIGITAL assumes no responsibility for the use or  reliability  of  its
+software on equipment which is not supplied by DIGITAL.
+.skip 2
+Copyright 1990 Digital Equipment Corporation
+.page
+.Chapter Overview and Contents
+.i
+This software package will allow a PAMS client application, with
+minimal changes, to
+execute transparently on a remote system without PAMS
+by using TCP/IP communications.
+.skip 2
+This software is broken down into two main components:
+.list "o"
+.le; The PAMS__TCPIP__ADAPTER. Also called "The Adapter", this
+program runs under the VMS system and
+executes the PAMS commands received from the client application.
+.le; The PAMS TCP/IP functions and include files. The client application is
+built and linked with these functions instead of PAMS to provide it with
+the ability of communicating over a TCP/IP connection to the Adapter.
+.els
+.skip
+Kit Contents:
+.skip
+.lt
+	PAMS_TCPIP.OLB			VMS Object library for building
+					the client applications. It also
+					contains the VMS binary image of
+					the Adapter itself.
+
+	p_tcpip1.h			Include files for PAMS TCP/IP
+	p_tcpip2.h			functions and communications.
+
+	p_aretur.h			Include files for creating
+	p_entry.h			Client applications on non-
+	p_group.h			PAMS systems; not required for
+	p_proces.h			VMS clients. Note: p_entry.h is
+	p_return.h			a new release and supercedes the
+	p_symbol.h			version provided with PC PAMS
+	p_typecl.h			version 1.3 or earlier.
+
+	p_tcpfnc.c			Source to the common TCP/IP
+					communications functions.
+
+	p_tcpip.c			Source to the PAMS TCP/IP
+					services. These are the PAMS
+					replacement functions for the
+					client.
+
+	samp_tcp.c			Sample TCP/IP client.
+
+	tcptest.c			PAMS TCP/IP test program. Very
+					similar to samp_tcp.c, but dis-
+					plays communication information
+					while running.
+
+	PAMS_TCPIP.OPT			Linker options file for building
+					Clients under VMS.
+
+	PAMS_TCPIP_ADP.RELEASE_NOTES 	Release Notes.
+
+	PAMS_TCPIP_ADP.TXT		Documentation.
+
+	PAMS$INSTALL_TCPIP_ADP.COM	Procedure to install the soft-
+					ware and build the VMS TCP/IP
+					Adapter.
+
+	PAMS$BUILD_TCPIP_ADP.COM	Procedure to build the
+					PAMS_TCPIP_ADAPTER.EXE image.
+.el
+.skip 2
+.i
+The PAMS TCP/IP Adapter currently provides support for the PAMS__DCL__PROCESS,
+PAMS__EXIT, PAMS__GET__MSGW, PAMS__PUT__MSG, PAMS__SET__SELECT, and
+PAMS__CONFIRM__MSG services. Note that asyncronous type
+operations are not available
+under this architecture; PAMS__GET__MSG and PAMS__GET__MSGA are not supported
+and will return errors.
+
+.Chapter Requirements
+.i
+The software requires:
+.list "o"
+.le; A VAX/VMS system V5.1 or greater to serve as the host system for the
+PAMS__TCPIP__ADAPTER.
+.le; PAMS V3.0 or greater on that same host VMS system.
+.le; The "VMS/ULTRIX Connection" software product
+(also called UCX), version 1.2 or higher, on the host VMS system.
+.le; A "C" compiler is required to build the client application If this
+is VAX/VMS, it must be VAX C V3.0 or greater. VAX C is not required on
+the host system to build the PAMS__TCPIP__ADAPTER.EXE image.
+.els
+.skip
+.i
+If the client application will be running under Ultrix, then Ultrix V3.1 or
+greater, or RISC Ultrix 4.0 or greater are required.
+.Chapter Installation
+Note: The installation procedure will copy the PAMS TCP/IP Adapter files
+into PAMS$LIB:, PAMS$EXE:, PAMS$EXAMPLES:, and PAMS$DOC:. Installation will
+require that these already be defined, and that the procedure has write
+access to those locations.
+.skip 2
+.i
+Copy the contents of the save set into an empty directory, and then execute the
+PAMS$INSTALL__TCPIP__ADP.COM procedure. This procedure will:
+.list
+.le;  Copy the p__tcpip.c, p__tcpfnc.c, PAMS__TCPIP.OPT, all the
+include files, and the object library to PAMS$LIB:.
+.le; Copy SAMP__TCP.C and TCPTEST.C to PAMS$EXAMPLES:.
+.le; Build the PAMS__TCPIP__ADAPTER image and place it in PAMS$EXE:
+.le; Copy the documentation files to PAMS$DOC:
+.els
+.Chapter Description
+.i
+This software package will allow a PAMS client, with minimal changes, to
+execute on a remote system withot PAMS by using TCP/IP communications to
+a host VAX/VMS system.
+.skip
+.i
+The client program is linked to an "alternative" PAMS library (called the
+TCP/IP PAMS services). When the resulting client is run and executes a PAMS
+service call, the PAMS call will
+automatically be formatted into a TCP/IP message and sent to the
+VMS_TCPIP_ADAPTER (hereafter referred to as the "Adapter"). The adapter parses
+the message and executed the "real" PAMS service. The resulting status and
+returned information is then packed into a response message and sent back to the
+client function. This response is processed and returned
+to the calling application as
+if the PAMS function was executed on the local system.
+.skip
+.lt
+                  +---------------------------+
+             .-   |   Application program     |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+     Client -+    |   PAMS function call      |
+             |    +---------------------------+
+             |    | Reformat parameters into  |
+             |    |       a TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |  adapter process and wait |
+                  +---------------------------+
+                                \
+                                /
+                                \
+.el
+.page
+.lt
+                                /
+                                \
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |      PAMS function call   |
+             |    +---------------------------+
+    adapter -+    |   Perform PAMS function   |
+             |    | and format results into a |
+             |    |         TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |       Client and wait     |
+                  +---------------------------+
+                                \
+                                /
+                                \
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |   PAMS Returned values    |
+             |    +---------------------------+
+     Client -+    |   Return to application   |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+             `-   |   Application program     |
+                  +---------------------------+
+.el
+.skip
+.i
+The TCP/IP client should be able to run under any system supporting TCP/IP
+socket communications; although only VMS and Ultrix have currently been tested.
+.hl Components
+.i
+This software is broken down into the following logical components:
+.list 
+.le; The PAMS__TCPIP__ADAPTER. This program runs under the VMS system and will
+execute the PAMS commands received from the TCP/IP client application
+.le; The Common PAMS TCP/IP functions (P__TCPFNC). These functions are used by
+both the client and the Adapter to perform basic TCP/IP communications.
+.le; The TCP/IP PAMS services (P__TCPIP). These are replacement functions
+for the standard PAMS services, but have the same extry point definitions.
+When a client program is linked to these functions instead of the PAMS library,
+the PAMS call will be formated into a TCP/IP message and send to the Adapter
+for execution. The Adapter will respond with the results, and these will be
+returned to the calling client application.
+.le; The include files. In addition to the necessary files for TCP/IP socket
+communications, the client must also include several files provided by this
+package.
+.le; Sample Client program and simple test program.
+.le; Miscellaneous file (Documentation, linker option file for VMS clients,
+installation _& build procedures).
+.els
+.skip
+.hl+1 Sample Client Program _& Test Program
+.i
+The sample Client program (SAMP__TCP.C) and the PAMS TCP/IP test program
+(TCPTEST.C) provide examples of a simplistic client
+process that essentially performs the following functions:
+.skip 2
+.lt
+		  +---------------------------+
+		  |  Declare Process to PAMS  |
+		  |  using PAMS_DCL_PROCESS   |
+		  +---------------------------+
+			        |
+                                V
+                  +---------------------------+
+                  | Initialize Variables, etc.|
+                  +---------------------------+
+              +---------------->|
+              |                 V
+              |   +---------------------------+
+              |   |   Wait for a message to   |
+              |   |     be received using     |
+              |   |       PAMS_GET_MSGW       |
+              |   +---------------------------+
+              |                 |
+              |                 V
+              |   +---------------------------+
+              |   |   Send "canned" response  |
+              |   |  message to client using  |
+              |   |       PAMS_PUT_MSG        |
+              |   +---------------------------+
+              |                 |
+              +---------<-------+
+.el
+.chapter Starting the VMS PAMS__TCPIP__ADAPTER image
+.i
+
+symbol definition _& arguments
+.chapter Creating/Modifying Client Applications
+
+.Chapter Restrictions
+.i
+This version of software is preliminary and has
+some current restrictions. These restrictions do not necessarily
+imply that the final version of
+the software will have them.
+Although all effort has been made to make
+the code portable and machine independent,
+this package has not been fully
+implemented or tested under all platforms. Currently; it has been tested with
+PAMS V3.0 on VMS 5.1 - 5.3 with UCX V1.2, Ultrix 3.1, and RISC Ultrix 4.0.
+Testing included use of the VAX C compiler and the Ultrix C compiler.
+Although the design should work on non-32 bit systems, no compiling or
+testing on such systems have taken place as of the date of this document.
+The following list details what restrictions exist for this release
+.list
+.le; VMS and ULTRIX have a message size limit of 32k. All other platforms
+have a maximum size limit of 4k. Although there should be sufficient
+internal space in the software, it may be possibe under some circumstances
+to receive a PAMS____BIGBLKSIZ error with messages that are below (but
+near) the maximum size limit. This is because the internal TCP/IP messages
+also include the PAMS parameters and header information, and the error
+signifies that the total constructed TCP/IP message exceeded the size limit.
+.le; Because the application will be using PAMS calls that
+will be "going through" a TCP/IP communications system; there are a few more
+possible return status codes than
+are presented in the PAMS documentation for the
+PAMS functions. A PAMS____SUCCESS code exists to remove dependance on
+SS$____NORMAL, although an SS$____NORMAL has also been defined
+for compatibility with VMS. To keep this package "transparent" to the
+client application, the TCP/IP functions
+will return PAMS____NOTSUPPORTED, PAMS____NETERROR, or PAMS____PAMSDOWN if a
+fatal communications error occurs, or a PAMS____BIGBLKSIZ error if the
+TCP/IP message exceeds the size maximum. If further detail is needed,
+a global variable "TCPIP__STATUS" will contain the the
+actual TCP/IP error value and "TCPIP__MODULE" will contain the name of the
+TCP/IP module that failed. These variables only exist for debugging and it is
+not advisable to reference them in application code, as they only exist in
+this package and referencing them will render you code non-transportable to
+standard PAMS platforms.
+.le; Only a subset of the PAMS commands have been implemented
+Currently: PAMS__DCL__PROCESS, PAMS__EXIT, PAMS__PUT__MSG,
+PAMS__GET__MSGW, PAMS__CONFIRM__MSG, and PAMS__SET__SELECT.
+.le; PAMS ASTs and ASYNC operations will not available under this architecture.
+PAMS__GET__MSGA and PAMS__GET__MSG (for example)
+are not supported and will return errors.
+.le; Currently, the VMS TCP/IP Adapter must be started first and already
+be running before a TCP/IP client attempts communication.
+.le; Only one client connection is allowed to a specific adapter at a
+time. If a connection is active and another process
+attempts a connect, the second process will be queued and
+will "stall" until the previous connection is closed.
+Multiple Adapters on the same host system are allowed, provided they use
+independent port numbers.
+.le; ALL optional PAMS arguments must be specified. If an
+argument is not desired, a value zero must be passed
+(this is standard "C" programming practice, but it is also a requirement
+for these routines to function correctly).
+.le; Only VMS and Ultrix have been tested to date. Further
+changes to P__TCPFNC.C will most likely be required for
+supporting additional operating systems. This is especially likely for
+non-32 bit systems and/or systems where the internal bytes
+for integers are stored in a different order than on VAX/VMS.
+.le; There is a "debug" mode which, when enabled, will cause the
+PAMS TCP/IP functions in the Adapter or Client to display trace and
+status information. Currently, the only way to enable this is to place a
+"tcpip__debug = TRUE;" statement in the beginning of the program and re-compile
+(or, if using a program debugger, to set tcpip__debug to 1 while debugging).
+The ability to "trigger" this feature on VMS via a logical definition
+may be added to
+the software at a future date. When tracing through the Adapter, it is often
+helpful to set tcpip__debug AND to set PAMS$DEBUG to "TRACE".
+.le; Support is provided only for the "C" programming language. A C
+compiler is required for building the client application. If this is VAX/VMS,
+it must be VAX C V3.0 or greater. VAX C is not required on the host system
+to build the PAMS__TCPIP__ADAPTER.EXE image.
+.els
+

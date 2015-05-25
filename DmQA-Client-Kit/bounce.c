@@ -1,0 +1,926 @@
+/* module DMQ$BOUNCE "DMQ V1.1-01" */
+/****************************************************************************/
+/*  DECMessageQ for VMS                                                     */
+/*                                                                          */
+/*  Copyright (c) 1990                                                      */
+/*  by DIGITAL Equipment Corporation, Maynard, Mass.                        */
+/*                                                                          */
+/*  This software is furnished under a license and may be used and  copied  */
+/*  only  in  accordance  with  the  terms  of  such  license and with the  */
+/*  inclusion of the above copyright notice.  This software or  any  other  */
+/*  copies  thereof may not be provided or otherwise made available to any  */
+/*  other person.  No title to and ownership of  the  software  is  hereby  */
+/*  transferred.                                                            */
+/*                                                                          */
+/*  The information in this software is subject to change  without  notice  */
+/*  and  should  not  be  construed  as  a commitment by DIGITAL Equipment  */
+/*  Corporation.                                                            */
+/*                                                                          */
+/*  DIGITAL assumes no responsibility for the use or  reliability  of  its  */
+/*  software on equipment which is not supplied by DIGITAL.                 */
+/*                                                                          */
+/****************************************************************************/
+
+
+
+/******************************************/
+/* BOUNCE.C Test request/response thruput */
+/******************************************/
+
+#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+#include <time.h>
+#include <stdlib.h>
+
+#ifdef VMS
+/*************************/
+/* Standard DMQ includes */
+/*************************/
+
+#pragma nostandard
+#include pams_c_entry_point
+#include pams_c_process
+#include pams_c_group  
+#include pams_c_type_class
+#include pams_c_return_status_def
+#include pams_c_symbol_def
+#pragma standard
+
+#ifndef QADAPTER_TEST
+#define QADAPTER_TEST 0
+#endif
+
+#else
+
+/*******************************/
+/* port-o-pams flavor includes */
+/*******************************/
+#include "p_entry.h"
+#include "p_proces.h"
+#include "p_group.h"
+#include "p_typecl.h"
+#include "p_return.h"
+#include "p_symbol.h"
+
+#ifndef QADAPTER_TEST
+#define QADAPTER_TEST 1
+#endif
+#endif
+
+#if QADAPTER_TEST
+#include "p_dmqa.h"
+#endif
+
+struct PAMS_PSB
+{
+   short int type;
+   short int cd;
+   long int del_status;
+   long int seq[2];
+   long int uma_status;
+   long int unused[3];
+} ;
+
+typedef union
+{
+   struct 
+   {
+      short process;
+      short group;
+   } au;
+   long all;
+} PAMS_ADDRESS;
+
+PAMS_ADDRESS         req_queue_num;        
+PAMS_ADDRESS         new_queue_num;        
+
+struct SHOW_BUF_STRUCT
+{
+   long version;
+   long del_status;
+   long size;
+   long reserved[7];
+   PAMS_ADDRESS tgt;
+   PAMS_ADDRESS orig_tgt;
+   PAMS_ADDRESS src;
+   PAMS_ADDRESS orig_src;
+   long delmode;
+   long prio;
+};
+
+static long      loop       = 1;
+
+/*********************************/
+/* counters                      */
+/*********************************/
+long int prev_count        = 0;
+long int receive_count     = 0;
+long int send_count        = 0;
+long int timing_count      = 0;
+
+/*********************************/
+/* switches                      */
+/*********************************/
+long int do_trace          = 0;
+long int do_recover        = 0;
+long int test_function     = 0;
+
+/*********************************/
+/* other                         */
+/*********************************/
+long int test_iterations   = 0;
+long int report_interval   = 100;
+long int time_prev         = 0;
+long int time_start        = 0;
+
+/*********************************/
+/* Terminal input buffer         */
+/*********************************/
+char answer[256];
+
+#define MAX_SIGNED_INTEGER 0x1fffffff
+
+char forcej      = PDEL_DEFAULT_JRN;
+long int confval = 0;
+
+#define MSG_TYPE_TEST_SHUTDOWN -1
+
+
+
+#define MSTR(x,y) case(x): mstrc = y; break;
+
+#ifndef PAMS__SUCCESS
+#define PAMS__SUCCESS 1
+#endif
+
+#define PAMS__ZERO    0
+
+static char *get_sym_str( sym )
+long int sym;
+{
+	char *mstrc;                   
+	char symbuf[80];
+
+	switch (sym)
+	{
+	MSTR(PAMS__ZERO, "PAMS__ZERO");
+	MSTR(PAMS__SUCCESS, "PAMS__SUCCESS");
+
+	MSTR(PAMS__DISC_SUCCESS, "PAMS__DISC_SUCCESS");
+	MSTR(PAMS__DISCL_SUCCESS, "PAMS__DISCL_SUCCESS");
+	MSTR(PAMS__DLJ_SUCCESS, "PAMS__DLJ_SUCCESS");
+	MSTR(PAMS__DLQ_SUCCESS, "PAMS__DLQ_SUCCESS");
+	MSTR(PAMS__RTS_SUCCESS, "PAMS__RTS_SUCCESS");
+	MSTR(PAMS__SAF_SUCCESS, "PAMS__SAF_SUCCESS");
+	MSTR(PAMS__NOMOREMSG, "PAMS__NOMOREMSG");
+	MSTR(PAMS__NOSEND, "PAMS__NOSEND");
+	MSTR(PAMS__WAKEFAIL, "PAMS__WAKEFAIL");
+	MSTR(PAMS__TIMERACT, "PAMS__TIMERACT");
+	MSTR(PAMS__MSGACT, "PAMS__MSGACT");
+	MSTR(PAMS__NO_UMA, "PAMS__NO_UMA");
+	MSTR(PAMS__UMA_NA, "PAMS__UMA_NA");
+	MSTR(PAMS__TRACEBACK, "PAMS__TRACEBACK");
+	MSTR(PAMS__STORED, "PAMS__STORED");
+	MSTR(PAMS__ENQUEUED, "PAMS__ENQUEUED");
+	MSTR(PAMS__UNATTACHEDQ, "PAMS__UNATTACHEDQ");
+	MSTR(PAMS__CONFIRMREQ, "PAMS__CONFIRMREQ");
+	MSTR(PAMS__PROPAGATE, "PAMS__PROPAGATE");
+	MSTR(PAMS__ABORT, "PAMS__ABORT");
+	MSTR(PAMS__BADDECLARE, "PAMS__BADDECLARE");
+	MSTR(PAMS__BADFREE, "PAMS__BADFREE");
+	MSTR(PAMS__TIMEOUT, "PAMS__TIMEOUT");
+	MSTR(PAMS__ACKTMO, "PAMS__ACKTMO");
+	MSTR(PAMS__MSGUNDEL, "PAMS__MSGUNDEL");
+	MSTR(PAMS__EX_Q_LEN, "PAMS__EX_Q_LEN");
+	MSTR(PAMS__POSSDUPL, "PAMS__POSSDUPL");
+	MSTR(PAMS__STUB, "PAMS__STUB");
+	MSTR(PAMS__SENDER_TMO_EXPIRED, "PAMS__SENDER_TMO_EXPIRED");
+	MSTR(PAMS__MRQTBLFULL, "PAMS__MRQTBLFULL");
+	MSTR(PAMS__NOTALLOCATE, "PAMS__NOTALLOCATE");
+	MSTR(PAMS__PNUMNOEXIST, "PAMS__PNUMNOEXIST");
+	MSTR(PAMS__BIGBLKSIZE, "PAMS__BIGBLKSIZE");
+	MSTR(PAMS__MSGTOBIG, "PAMS__MSGTOBIG");
+	MSTR(PAMS__INVALIDID, "PAMS__INVALIDID");
+	MSTR(PAMS__INVFORMAT, "PAMS__INVFORMAT");
+	MSTR(PAMS__INVBUFFPTR, "PAMS__INVBUFFPTR");
+	MSTR(PAMS__INVALIDNUM, "PAMS__INVALIDNUM");
+	MSTR(PAMS__BIGMSG, "PAMS__BIGMSG");
+	MSTR(PAMS__MSGTOSMALL, "PAMS__MSGTOSMALL");
+	MSTR(PAMS__AREATOSMALL, "PAMS__AREATOSMALL");
+	MSTR(PAMS__NOCANSEND, "PAMS__NOCANSEND");
+	MSTR(PAMS__NOTACTIVE, "PAMS__NOTACTIVE");
+	MSTR(PAMS__EXCEEDQUOTA, "PAMS__EXCEEDQUOTA");
+	MSTR(PAMS__BADPRIORITY, "PAMS__BADPRIORITY");
+	MSTR(PAMS__BADDELIVERY, "PAMS__BADDELIVERY");
+	MSTR(PAMS__BADJOURNAL, "PAMS__BADJOURNAL");
+	MSTR(PAMS__BADPROCNUM, "PAMS__BADPROCNUM");
+	MSTR(PAMS__BADTMPPROC, "PAMS__BADTMPPROC");
+	MSTR(PAMS__BADSYNCHNUM, "PAMS__BADSYNCHNUM");
+	MSTR(PAMS__BADTMPSYNCH, "PAMS__BADTMPSYNCH");
+	MSTR(PAMS__BADRECEIVE, "PAMS__BADRECEIVE");
+	MSTR(PAMS__BADTIME, "PAMS__BADTIME");
+	MSTR(PAMS__NOTDCL, "PAMS__NOTDCL");
+	MSTR(PAMS__STATECHANGE, "PAMS__STATECHANGE");
+	MSTR(PAMS__INVUCBCNTRL, "PAMS__INVUCBCNTRL");
+	MSTR(PAMS__NOLINK, "PAMS__NOLINK");
+	MSTR(PAMS__CIRACT, "PAMS__CIRACT");
+	MSTR(PAMS__PROTOCOL, "PAMS__PROTOCOL");
+	MSTR(PAMS__COMMERR, "PAMS__COMMERR");
+	MSTR(PAMS__BADSELIDX, "PAMS__BADSELIDX");
+	MSTR(PAMS__IDXTBLFULL, "PAMS__IDXTBLFULL");
+	MSTR(PAMS__BADPARAM, "PAMS__BADPARAM");
+	MSTR(PAMS__NOMRS, "PAMS__NOMRS");
+	MSTR(PAMS__DISC_FAILED, "PAMS__DISC_FAILED");
+	MSTR(PAMS__DISCL_FAILED, "PAMS__DISCL_FAILED");
+	MSTR(PAMS__DLJ_FAILED, "PAMS__DLJ_FAILED");
+	MSTR(PAMS__DLQ_FAILED, "PAMS__DLQ_FAILED");
+	MSTR(PAMS__DQF_DEVICE_FAIL, "PAMS__DQF_DEVICE_FAIL");
+	MSTR(PAMS__INVUMA, "PAMS__INVUMA");
+	MSTR(PAMS__DQF_FULL, "PAMS__DQF_FULL");
+	MSTR(PAMS__INVJH, "PAMS__INVJH");
+	MSTR(PAMS__LINK_DOWN, "PAMS__LINK_DOWN");
+	MSTR(PAMS__BADSEQ, "PAMS__BADSEQ");
+	MSTR(PAMS__NOTJRN, "PAMS__NOTJRN");
+	MSTR(PAMS__MRS_RES_EXH, "PAMS__MRS_RES_EXH");
+	MSTR(PAMS__NOMOREJH, "PAMS__NOMOREJH");
+	MSTR(PAMS__REJECTED, "PAMS__REJECTED");
+	MSTR(PAMS__NOSUCHPCJ, "PAMS__NOSUCHPCJ");
+	MSTR(PAMS__UCBERROR, "PAMS__UCBERROR");
+	MSTR(PAMS__BADUMA, "PAMS__BADUMA");
+	MSTR(PAMS__BADRESPQ, "PAMS__BADRESPQ");
+	MSTR(PAMS__BADARGLIST, "PAMS__BADARGLIST");
+	MSTR(PAMS__NO_DQF, "PAMS__NO_DQF");
+	MSTR(PAMS__NO_SAF, "PAMS__NO_SAF");
+	MSTR(PAMS__RTS_FAILED, "PAMS__RTS_FAILED");
+	MSTR(PAMS__SAF_DEVICE_FAIL, "PAMS__SAF_DEVICE_FAIL");
+	MSTR(PAMS__SAF_FAILED, "PAMS__SAF_FAILED");
+	MSTR(PAMS__BADLOGIC, "PAMS__BADLOGIC");
+	MSTR(PAMS__SELRCVACT, "PAMS__SELRCVACT");
+	MSTR(PAMS__NOMRQRESRC, "PAMS__NOMRQRESRC");
+	MSTR(PAMS__BADASSIGN, "PAMS__BADASSIGN");
+	MSTR(PAMS__LOGNAME, "PAMS__LOGNAME");
+	MSTR(PAMS__LOGNAME2, "PAMS__LOGNAME2");
+	MSTR(PAMS__LOGNAME3, "PAMS__LOGNAME3");
+	MSTR(PAMS__LOGNAME4, "PAMS__LOGNAME4");
+	MSTR(PAMS__LOGNAME5, "PAMS__LOGNAME5");
+	MSTR(PAMS__NOOPEN, "PAMS__NOOPEN");
+	MSTR(PAMS__BADSCRIPT, "PAMS__BADSCRIPT");
+	MSTR(PAMS__DECLARED, "PAMS__DECLARED");
+	MSTR(PAMS__EXHAUSTBLKS, "PAMS__EXHAUSTBLKS");
+	MSTR(PAMS__INTERNAL, "PAMS__INTERNAL");
+	MSTR(PAMS__QUECORRUPT, "PAMS__QUECORRUPT");
+	MSTR(PAMS__REMQUEFAIL, "PAMS__REMQUEFAIL");
+	MSTR(PAMS__INSQUEFAIL, "PAMS__INSQUEFAIL");
+	MSTR(PAMS__CREATEFAIL, "PAMS__CREATEFAIL");
+	MSTR(PAMS__DCLTMPFAIL, "PAMS__DCLTMPFAIL");
+	MSTR(PAMS__PAMSDOWN, "PAMS__PAMSDOWN");
+	MSTR(PAMS__BADASTPARM, "PAMS__BADASTPARM");
+	MSTR(PAMS__NOQUOTA, "PAMS__NOQUOTA");
+	MSTR(PAMS__NOTPRIMARYQ, "PAMS__NOTPRIMARYQ");
+             
+	default:
+	   sprintf(symbuf, "PAMS__UNEXPECTED - %d", sym );
+	   mstrc = symbuf;
+	}                 
+
+	return (mstrc);
+}
+
+
+
+static long int check_psb( lpsb )
+struct PAMS_PSB *lpsb;
+{
+        /****************************************************/
+        /* Return 1 iff the message was successfully queued */
+        /****************************************************/
+        if ( (lpsb->del_status == PAMS__SUCCESS  )
+        ||   (lpsb->del_status == PAMS__STORED   )
+        ||   (lpsb->del_status == PAMS__ENQUEUED ) )
+        {
+           return ( 1 );
+        }
+        else if (lpsb->uma_status == PAMS__SAF_SUCCESS )
+        {
+           return ( 1 );
+        }
+        return ( 0 );
+}
+
+#define RCV 0L
+#define SND 1L
+
+static long int trace_msg( srind, qaddr, ilen, lpsb )
+int srind;
+long qaddr;
+short ilen;
+struct PAMS_PSB *lpsb;
+{
+   char *c1, *c2;
+   PAMS_ADDRESS qa;
+
+        qa.all = qaddr;
+
+        switch (srind)
+        {
+        case SND:
+           c1 = "Send";
+           c2 = "to  ";
+           break;
+
+        case RCV:
+           c1 = "Recv";
+           c2 = "from";
+           break;
+
+        default:
+           return ( 0 );
+        }
+
+        printf("%s,Seq:(%x,%x) %s (%d.%d) Len:%u\n",
+                 c1, 
+                 lpsb->seq[0],lpsb->seq[1], 
+                 c2,
+                 qa.au.group, qa.au.process,
+                 ilen);
+
+        if ( lpsb->del_status != PAMS__SUCCESS  )
+        {
+           printf("PSB status: %s\n", get_sym_str( lpsb->del_status ) );
+        }
+
+        if (lpsb->uma_status != PAMS__UMA_NA )
+        {
+           printf("UMA status: %s\n", get_sym_str( lpsb->uma_status ) );
+        }
+        printf ("\n");
+        return ( 1 );
+}
+
+
+
+static long int scale_interval(interval, delta )
+long int interval;
+long int delta;
+{
+
+  double fdelta;
+  double finterval;
+  double fscale;
+
+  long int new_interval;
+                
+        /*****************************************************************/
+        /* scale the new interval so that delta is close to 10.0 seconds */
+        /*****************************************************************/
+        if (delta == 0) return ( interval );        /* not expected... */
+
+        fdelta     = (double)delta;
+        finterval  = (double)interval;
+
+        fscale     = 10.0 / fdelta;
+        finterval  = fscale * finterval + .5;        /* round up to int */
+
+        new_interval  = (long int)finterval;
+
+        return ( new_interval );
+}
+
+
+
+static double calculate_rate( msgs, delta )
+long int msgs;
+long int delta;
+{
+   double fmsgs;   
+   double fdelta;
+   double frate;
+
+        if (delta == 0) return ( 0 );
+
+        fmsgs  = (double)msgs;
+        fdelta = (double)delta;
+
+        frate  = fmsgs / fdelta;
+
+        return ( frate );
+}
+        
+
+
+static long int show_count()
+{ 
+  long int time_now;
+  long int incr;
+  long int time_delta;
+  double   rate;
+
+
+        incr=receive_count - prev_count;        
+
+        /***************************************************/
+        /* Get the time in seconds since UNIX was invented */
+        /***************************************************/
+        (void) time(&time_now);
+
+        if (time_prev)
+        {
+           /**************************/
+           /* Calculate elapsed time */
+           /**************************/
+           time_delta = time_now - time_prev;
+
+           if (time_delta > 0)
+           {
+              /*********************************************/
+              /* Calculate the message rate and display it */
+              /*********************************************/
+              rate       = calculate_rate( incr, time_delta );
+
+              printf(
+              "%3.3d sec\tTotal rcvd:\t%d\tIncr:\t%d\t%3.3f/sec\n",
+                 time_delta,receive_count,incr, rate);
+           }
+
+           /******************************************************/
+           /* Set the next report interval so that reports occur */
+           /* close to every 10 seconds.                         */
+           /******************************************************/
+           report_interval = scale_interval( report_interval, time_delta );
+        }
+
+        prev_count = receive_count;
+        time_prev = time_now;
+
+        return ( 1 );
+}
+
+
+
+static long int check_ret(stsvalue)
+long int stsvalue;
+{
+        if (stsvalue & 1) return (1);
+
+        printf("%s\n", get_sym_str( stsvalue ) );
+        return(0);
+}
+
+
+
+static long int get_number( prompt, low, high )
+char *prompt;
+long int low;
+long int high;
+{
+   long int iout;
+
+        if ( high < low ) high = MAX_SIGNED_INTEGER;
+
+        while ( loop )
+        {
+           printf( prompt );
+#ifdef AS400
+	printf("\n");
+#endif
+           gets( answer );
+           iout = atoi(answer);
+           if ( ( iout<low ) || ( iout>high) ) 
+           {
+              printf("Input a number from %d to %d\n", low, high );
+              continue;
+           }
+           break;
+        }
+        return ( iout );
+}
+
+
+#ifdef VMS
+/*************************************************/
+/* static main can fit into VMS object libraries */
+/* without clashing with other main programs     */
+/*************************************************/
+static main(argc, argv)
+int argc;
+char *argv[];
+
+#else
+
+main(argc,argv)
+int argc;
+char *argv[];
+
+#endif
+{
+   long int status;
+   long int time_now;
+   double   rate;
+   long int time_delta;
+
+   long int confirmreq = 0;
+
+   /**************************/
+   /* pams_put_msg variables */
+   /**************************/
+
+   PAMS_ADDRESS send_target;
+   short send_length   = 0;
+   char  send_delivery = 0;
+   long  send_timeout  = 0;
+   char  send_uma      = 0;
+
+   /****************************************/
+   /* pams get msg variables               */
+   /****************************************/
+   struct SHOW_BUF_STRUCT show_buf;
+   long int show_buf_len = sizeof(struct SHOW_BUF_STRUCT);
+
+   struct PAMS_PSB  lpsb;
+   char             msg_area[32000]; 
+
+   long int         timeout           = 0;
+   long		    source            = 0;
+   char             prio              = 0;
+   short            class             = 0;
+   short            type              = 0;
+   short int        length            = 0;
+
+   short int        max_len = sizeof(msg_area);
+   short int        sel_addr[2];
+
+   int i;
+   long istat;
+
+   /*********************************/
+   /* Functions used by this module */
+   /*********************************/
+   /* extern long int check_psb( struct PAMS_PSB *); */
+
+
+
+#if QADAPTER_TEST
+        /**************************************************/
+        /* Let the qadapter use command line input        */
+        /* to set DMQA__host, DMQA__port, and DMQA__debug */
+        /**************************************************/
+        DMQA__argc = argc;
+        DMQA__argv = argv;
+#endif
+        /******************************/
+        /* Handle any BOUNCE switches */
+        /******************************/
+        for (i=1; i<argc; i++ )
+        {
+           if ( strcmp(argv[i], "trace"  ) == 0 ) do_trace = 1;
+        }
+
+        /******************************/
+        /* Prompt for test parameters */
+        /******************************/
+        while ( loop )
+        {
+	   req_queue_num.all = 0;
+           req_queue_num.au.process = get_number(
+              "BOUNCE queue number?  0 = assign temp queue; -1 means exit :",
+	      -1, 999 );
+
+	   if (req_queue_num.au.process == -1)
+	   {
+		(void) pams_exit();
+		exit(1);
+	    }
+
+           status = pams_dcl_process(&req_queue_num.all, 
+                                  &new_queue_num.all,
+                                  0L, 0L, 0L, 0L);
+
+           if (!check_ret(status)) continue;        /* TRY AGAIN */
+           break;
+        }
+
+        printf("Declared as (%d.%d)\n", 
+           new_queue_num.au.group, new_queue_num.au.process );
+
+
+        test_function = get_number(
+              "1 = send, 2 = recv, 3 = shutdown            :", 1, 3 );
+        
+        switch ( test_function )
+        {
+        case 1:
+           send_target.au.group = get_number(
+              "Target group number?                        :", 0, 32000 );
+
+           send_target.au.process = get_number(
+              "Target queue number?                        :", 1, 999 );
+
+           break;
+
+        case 2:
+           send_target.all = 0;
+           break;
+
+        case 3:
+           goto DO_SHUTDOWN;
+        }
+
+        if ( test_function == 1 )
+        {
+           send_length = get_number(
+              "message_length?                             :", 0, 32000 );
+
+           do_recover = get_number(
+              "Send recoverable messages? 0 = no, 1 = yes  :", 0, 1);
+
+           test_iterations = get_number(
+              "Test iterations? 0 = loop forever           :", 
+              0, MAX_SIGNED_INTEGER );
+        }
+
+        sel_addr [0] = sel_addr [1] = 0;
+
+        /************************************/
+        /* Wait till user tells us to start */
+        /************************************/
+        printf("<CR> to start:");
+#ifdef AS400
+	printf("\n");
+#endif
+        gets( answer );
+
+
+        /*********************/
+        /* Main message loop */
+        /*********************/
+        prio = timeout = 0;
+        max_len = 32000;
+
+        receive_count = 0;
+
+        if (send_target.all )
+        {
+           /***************************/
+           /* Drain the primary queue */
+           /***************************/
+           while (loop)
+           {
+              status = pams_get_msg(msg_area,
+                        &prio,
+			&source,
+                        &class,
+			&type, 
+                        &max_len,
+			&length,
+                        (long *) sel_addr,
+                        (struct psb *) &lpsb, 
+                        (char *) &show_buf,
+			&show_buf_len, 
+                        (char *)0, 0L, 0L);
+
+              if (status == PAMS__NOMOREMSG) break;
+
+              if (!check_ret(status)) return(status);
+
+              if ( ( lpsb.del_status == PAMS__CONFIRMREQ )
+              ||   ( lpsb.del_status == PAMS__POSSDUPL   ) )
+              {
+                 istat = pams_confirm_msg(lpsb.seq, &confval, &forcej );
+              }
+           }
+
+           /**************************************/
+           /* Send the first message in the test */
+           /**************************************/
+           prio  = 0;
+           class = 0;
+           type  = 0;
+        
+           if (do_recover)
+           {
+              send_delivery = PDEL_MODE_WF_DQF;
+              send_uma      = PDEL_UMA_SAF;
+              report_interval = 10;
+           }
+
+           status = pams_put_msg(msg_area,
+                                  &prio,
+                                  (long *) &send_target.all,
+                                  &class,
+                                  &type, 
+                                  &send_delivery, 
+                                  &send_length,
+                                  &send_timeout, 
+                                  (struct psb *) &lpsb, 
+                                  &send_uma, 
+                                  0L, 0L, 0L, 0L ); 
+           if (!check_ret(status))
+	   {
+		(void) pams_exit();
+		return(status);
+	   }
+
+           if (!check_psb( (struct PAMS_PSB *)&lpsb ) )
+           {
+              status = lpsb.del_status;
+
+              (void) trace_msg( SND, send_target.all,
+                                    send_length,
+                                    (struct PAMS_PSB *) &lpsb );
+	      (void) pams_exit();
+              return(status);
+           }
+
+           send_count++;
+
+           if (do_trace)
+                (void) trace_msg( SND, send_target.all,
+                                    send_length,
+                                    (struct PAMS_PSB *) &lpsb );
+        }
+
+        while ( loop )
+        {
+
+           confirmreq = 0;
+           status = pams_get_msgw(msg_area,
+                        &prio,
+			&source,
+                        &class,
+			&type, 
+                        &max_len,
+			&length,
+                        &timeout,
+			(long *) sel_addr,
+                        (struct psb *) &lpsb, 
+                        (char *) &show_buf,
+			&show_buf_len, 
+                        (char *)0, 0L, 0L);
+              
+           if (!check_ret(status))
+	   {
+		(void) pams_exit();
+	        return(status);
+	   }
+
+           ++receive_count;
+
+           if ( ( lpsb.del_status == PAMS__CONFIRMREQ )
+           ||   ( lpsb.del_status == PAMS__POSSDUPL   ) )
+           {
+              istat = pams_confirm_msg(lpsb.seq, &confval, &forcej );
+              confirmreq = 1;
+           }
+
+           if (!time_start)
+           {
+              /*************************/
+              /* record the start time */
+              /*************************/
+              (void) time(&time_start);
+           }
+
+           if (type == MSG_TYPE_TEST_SHUTDOWN )
+	   {
+		(void) pams_exit();
+		break;
+	   }
+
+           ++timing_count;
+           if (timing_count >= report_interval )
+           {
+              timing_count = 0;
+              show_count();
+           }
+
+           source = show_buf.orig_src.all;
+
+           if ( do_trace )
+                (void) trace_msg(   RCV, source,
+                                    length,
+                                    (struct PAMS_PSB *) &lpsb );
+
+           /*********************************************************/
+           /* Here, we should have received as many messages        */
+           /* as we have sent. So... if the receive count matches   */
+           /* the desired number of repetitions, then we're done    */
+           /*********************************************************/
+           if (test_iterations)
+              if (receive_count >= test_iterations )
+	      {
+		(void) pams_exit();
+		break;
+	      }
+
+           prio  = 0;
+           class = 0;
+           type  = 0;
+
+           if ( (do_recover) || (confirmreq ) )
+           {
+              send_delivery = PDEL_MODE_WF_DQF;
+              send_uma      = PDEL_UMA_SAF;
+           }
+
+           /****************************************************/
+           /* reflect this message back to the original source */
+           /****************************************************/
+
+           status = pams_put_msg(msg_area,
+                                  &prio,
+                                  (long *) &source,
+                                  &class,
+                                  &type, 
+                                  &send_delivery, 
+                                  &length,
+                                  &send_timeout, 
+                                  (struct psb *) &lpsb, 
+                                  &send_uma, 
+                                  0L, 0L, 0L, 0L ); 
+           if (!check_ret(status))
+	   {
+		(void) pams_exit();
+	        return(status);
+	   }
+
+           if (!check_psb( (struct PAMS_PSB *)&lpsb ) )
+           {
+              status = lpsb.del_status;
+              (void) trace_msg( SND, source,
+                                    send_length,
+                                    (struct PAMS_PSB *) &lpsb );
+	      (void) pams_exit();
+              return(status);
+           }
+
+           if (do_trace)
+                (void) trace_msg(  SND, source,
+                                    length,
+                                    (struct PAMS_PSB *) &lpsb );
+
+           send_count++;
+
+        }
+
+        if (test_function == 1 )
+        {
+           (void) time(&time_now);        
+           time_delta = time_now - time_start;
+
+           rate = calculate_rate( receive_count, time_delta );
+
+           printf("\nTest done: sent:%d rcvd:%d rate:%3.3f/sec\n", 
+              send_count, receive_count, rate);
+           goto DO_SHUTDOWN;
+        }
+
+	(void) pams_exit();
+        return ( 1 );
+
+
+
+DO_SHUTDOWN:
+        while (loop)
+        {
+           test_function = get_number(
+              "Shutdown a test program? 0 = no, 1 = yes    :", 0,1);    
+
+           if (!test_function)
+	   {
+		(void) pams_exit();
+	         break;
+	   }
+
+           send_target.au.group = get_number(
+              "group number?                               :", 0, 32000 );
+
+           send_target.au.process = get_number(
+              "queue number?  0 = done                     :", 1, 999 );
+
+           type = MSG_TYPE_TEST_SHUTDOWN;
+           send_delivery = 0;
+           send_uma      = 0;
+
+           status = pams_put_msg(msg_area,
+                                  &prio,
+                                  (long *) &send_target.all,
+                                  &class,
+                                  &type, 
+                                  &send_delivery, 
+                                  &length,
+                                  &send_timeout, 
+                                  (struct psb *) &lpsb, 
+                                  &send_uma, 
+                                  0L, 0L, 0L, 0L ); 
+           if (!check_ret(status))
+	   {
+		(void) pams_exit();
+		return(status);
+	   }
+        } 
+
+	(void) pams_exit();
+        return ( 1 );
+}
+

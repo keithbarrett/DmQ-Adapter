@@ -1,0 +1,366 @@
+<CHAPTER>(TCP/IP Queue Adapter Overview\Overview)
+<page>
+<head1>(Description\description)
+<x>(TCP/IP Adapter<xs>description\begin)
+<x>(TCP/IP Adapter<xs>overview\begin)
+<P>The TCP/IP Queue Adapter allows a client to access a <emphasis>(PAMS)
+<x>(PAMS)
+message bus through a TCP/IP communications link with a host process.
+Client applications may communicate with
+<x>(Client Applications)
+each other, or with multiple remote systems, by using multiple TCP/IP
+<x>(TCP/IP Adapter Process<xs>using multiple adapters)
+Adapters. Although the client application may reside on the same
+host system as the TCP/IP Adapter, the more common application is for
+the client to run on a remote system that is not a member of the message bus,
+but can communicate to the host system through a TCP/IP datalink.
+
+<p> The TCP/IP Queue Adapter consists of two main functional components:
+<x>(TCP/IP Adapter Process)
+<x>(TCP/IP Adapter Process<xs>description\begin)
+<x>(TCP/IP Adapter API<xs>description)
+the host <emphasis>(TCP/IP Adapter Process), and the client
+<emphasis>(TCP/IP Adapter API) (Application Programming Interface) functions.
+Instead of <emphasis>(PAMS) service functions, the client program is built
+with the TCP/IP Adapter API. The TCP/IP API functions
+have the same entry parameters
+as their corresponding <emphasis>(PAMS) functions, but they forward the
+<x>(PAMS)
+parameters to the TCP/IP
+Adapter running on a host system. The TCP/IP Adapter changes
+this information into the <emphasis>(PAMS) command,
+executes it, and then returns the results to the
+client's TCP/IP API. The response is formatted into valid
+return information and is then passed back to the calling
+client application. To the client, it appears as if the called function
+<x>(Client Applications)
+had execute on the client's local system. <reference>(tcpadp_1) depicts
+this logic flow.
+<figure>(Logic flow of a TCP/IP Adapter Client\TCPADP_1)
+<LINE_ART>(KEEP)
+
+          .-  .---------------------------.
+          |   |      User Application     |
+          |   +--                       --+
+          |   |     PAMS function call    |
+          |   +---------------------------+  -.
+ Client --+   |   Format PAMS call into   |   |
+          |   |      a TCP/IP message     |   |
+          |   +--                       --+   +-- TCP/IP API
+          |   |  Send TCP/IP message to   |   |   Functions
+          |   | TCP/IP Adapter and await  |   |
+          |   |         Response          |   |
+          `-  `---------------------------'  -'
+                            \
+                            /
+<valid_break>
+                            \
+                            /
+                            \
+                            V
+          .-  .---------------------------.
+          |   |  Receive TCP/IP message   |
+          |   +--                       --+
+          |   |  Format message into the  |
+          |   |    Requested PAMS call    |
+          |   +---------------------------+  -.
+TCP/IP  --|   |     Perform PAMS call     |   +-- PAMS
+Adapter   |   +---------------------------+  -'
+          |   |   Format results into a   |
+          |   |       TCP/IP message      |
+          |   +--                       --+
+          |   |   Send TCP/IP message to  |
+          |   |        Client's API       |
+          `-  `---------------------------'
+                            \
+                            /
+<valid_break>
+                            \
+                            /
+                            \
+                            V
+          .-  .---------------------------.  -. 
+          |   |  Receive TCP/IP Response  |   |
+          |   +--                       --+   |
+          |   | Format message into PAMS  |   |
+ Client --+   |       Return values       |   +-- TCP/IP API
+          |   +--                       --+   |   Functions
+          |   |   Return to application   |   |
+          |   +---------------------------+  -'
+          |   |   Application program     |
+          `-  `---------------------------'
+
+<ENDLINE_ART>
+<endfigure>
+<x>(TCP/IP Adapter<xs>description\end)
+<x>(TCP/IP Adapter Process<xs>description\end)
+
+<head1>(Functionality\functionality)
+<x>(TCP/IP Adapter<xs>functionality\begin)
+<p>The TCP/IP Adapter provides message bus access to systems
+that support a TCP/IP connection to a host <emphasis>(VMS-PAMS) system. 
+<x>(PAMS<xs>VMS-PAMS)
+Existing <Emphasis>(PAMS) client applications should be able to use
+the TCP/IP API with little or no changes.
+<x>(Client Applications)
+<p>
+The TCP/IP Adapter and API provides support for the following <emphasis>(PAMS)
+functions:
+<list>(unnumbered)
+<x>(PAMS functions)
+<le><emphasis>(PAMS_DCL_PROCESS\bold)<x>(PAMS functions<xs>PAMS_DCL_PROCESS)
+<le><emphasis>(PAMS_PUT_MSG\bold)<x>(PAMS functions<xs>PAMS_PUT_MSG)
+<le><emphasis>(PAMS_GET_MSGW\bold)<x>(PAMS functions<xs>PAMS_GET_MSGW)
+<le><emphasis>(PAMS_SET_SELECT\bold)<x>(PAMS functions<xs>PAMS_SET_SELECT)
+<le><emphasis>(PAMS_CONFIRM_MSG\bold)<x>(PAMS functions<xs>PAMS_CONFIRM_MSG)
+<le><emphasis>(PAMS_EXIT\bold)<x>(PAMS functions<xs>PAMS_EXIT)
+<endlist>
+<cp>Running multiple TCP/IP Adapter Processes on the host
+<x>(TCP/IP Adapter Process<xs>using multiple adapters\begin)
+<emphasis>(PAMS) system will allow tasks on different remote TCP/IP systems
+to communicate with each other through the message bus, as shown in
+<reference>(dual_tasks_figure).
+<figure>(Using Multiple TCP/IP Adapter Processes\dual_tasks_figure)
+<LINE_ART>(KEEP)
+                                                             .
+                                                            / \
+ .--------------------.  .------------------------------.  /   \
+ |      Ultrix        |  |                              | /_   _\
+ | .---------------.  |  |  .------------------------.  |   |M|
+ | | TCP/IP Client |<------>| TCP/IP Adapter Process |<---->|E|
+ | `---------------'  |  |  |       Port 1050        |  |   |S|
+ |     System #1      |  |  `------------------------'  |   |S|
+ `--------------------'  |                              |   |A|
+                         |   Host VAX/VMS PAMS System   |   |G|
+ .--------------------.  |                              |   |E|
+ |        Unix        |  |                              |   | |
+ | .---------------.  |  |  .------------------------.  |   |B|
+ | | TCP/IP Client |<------>| TCP/IP Adapter Process |<---->|U|
+ | `---------------'  |  |  |       Port 1055        |  |   |S|
+ |     System #2      |  |  `------------------------'  | .-' `-.
+ `--------------------'  `------------------------------' \     /
+                                                           \   /
+                                                            \ /
+                                                             '
+<ENDLINE_ART>
+<endfigure>
+<x>(TCP/IP Adapter Process<xs>using multiple adapters\end)
+<x>(TCP/IP Adapter<xs>functionality\end)
+
+<HEAD1>(Requirements\requirements)
+<x>(TCP/IP Adapter<xs>requirements\begin)
+<x>(TCP/IP Adapter Process\begin)
+<p>Currently, the TCP/IP Adapter Process only runs under the VAX/VMS
+<y>(VMS - see "VAX/VMS")
+<x>(VAX/VMS)
+operating system. DECnet is not required for the TCP/IP Adapter, even
+<x>(DECnet)
+if multiple adapters are being used to "connect" multiple remote TCP/IP
+<x>(TCP/IP Adapter Process<xs>using multiple adapters)
+systems, but <emphasis>(PAMS) may require DECnet if there are messages to
+groups on other nodes not connected by TCP/IP links.
+<p><emphasis>(The TCP/IP Adapter Process requires the following:\bold)
+<LIST>(UNNUMBERED)
+<LE><emphasis>(VAX/VMS) V5.2 or higher
+<x>(VAX/VMS)
+<LE><emphasis>(VMS/Ultrix Connection) V1.2 or higher
+<x>(VMS/Ultrix Connection)
+<LE><emphasis>(VMS-PAMS) V2.5 or higher.
+<x>(PAMS<xs>VMS-PAMS)
+<ENDLIST>
+<x>(TCP/IP Adapter Process\end)
+
+<x>(TCP/IP Adapter API<xs>requirements\begin)
+<cp><emphasis>(For building client applications, the TCP/IP API requires:\bold)
+<x>(Client Applications)
+<LIST>(unnumbered)
+<le>A <emphasis>(C\bold) language compiler.
+<x>(C Compiler)
+<y>(VAX C - see "C Compiler")
+If using <emphasis>(VAX C), this must be V3.0 or higher.
+<x>(C Compiler<xs>VAX C)
+<le>TCP/IP socket communication functions.
+<x>(TCP/IP Sockets)
+<le>If using <emphasis>(Ultrix), it should be version 3.0 or higher.
+<emphasis>(RISC Ultrix)
+<x>(Ultrix)
+<x>(Ultrix<xs>RISC))
+<y>(RISC Ultrix - see "Ultrix")
+should be version 4.0 or higher. Other versions or operating systems
+may require source file modifications to the TCP/IP API.
+<x>(TCP/IP Adapter API<xs>modification of)
+<endlist>
+<cp>TCP/IP Client applications do not require <emphasis>(PAMS) or
+<emphasis>(DECnet) to use the
+<x>(PAMS)
+<x>(DECnet)
+<x>(Client Applications)
+TCP/IP API functions to communicate with the TCP/IP Adapter.
+<P>It should be possible to use the TCP/IP API and the user
+client application under any operating system that
+supports TCP/IP socket communications and a <emphasis>(C\bold)
+language compiler. <y>(Sockets - see "TCP/IP Sockets")
+<x>(TCP/IP Sockets)
+Effort has been made to make the source as portable as possible. There
+<x>(TCP/IP Adapter<xs>portability)
+may be cases, however, where special editing of the user client or the
+TCP/IP API source files may be necessary. This will depend on the operating
+system and the compiler used.
+<x>(TCP/IP Adapter API<xs>modification of)
+<x>(PAMS functions<xs>PAMS_DCL_PROCESS)
+<x>(TCP/IP Adapter<xs>requirements\end)
+<x>(TCP/IP Adapter API<xs>requirements\end)
+
+<HEAD1>(Components\components)
+<x>(TCP/IP Adapter<xs>components\begin)
+<P>The TCP/IP Adapter package consists of the following logical components:
+
+<list>(numbered)
+<x>(TCP/IP Adapter Process\begin)
+<le>The TCP/IP Adapter Process for the <emphasis>(PAMS)
+VAX/VMS host system. This includes:
+<x>(TCP/IP Adapter Process<xs>components\begin)
+<list>(unnumbered)
+<le>The <emphasis>(PAMS_TCPIP.OLB\bold)
+object library (containing the binary image of the TCP/IP Adapter Process).
+<x>(PAMS_TCPIP.OLB)
+<le>The TCP/IP Adapter Process build procedure.
+<le>The TCP/IP Adapter Process startup procedure.
+<endlist>
+<x>(TCP/IP Adapter Process<xs>components\end)
+<x>(TCP/IP Adapter Process\end)
+<le>The TCP/IP API for client applications written under
+VMS and non-VMS systems. These files include:
+<x>(TCP/IP Adapter API<xs>components\begin)
+<list>(unnumbered)
+<le>The TCP/IP Adapter communication functions source files.
+<le>The TCP/IP Adapter <emphasis>(PAMS) entry functions source files.
+<le>The include files and <emphasis>(PAMS_TCPIP.TLB\bold) text library.
+<x>(PAMS_TCPIP.TLB)
+<le>The link options file for VMS client applications.
+<x>(Client Applications)
+<endlist>
+<x>(TCP/IP Adapter API<xs>components\end)
+<le>Documentation files and sample client applications.
+<endlist>
+
+<p>The following is a summary list of all files that are part of the TCP/IP
+Adapter:
+<list>(unnumbered)
+<le><emphasis>(PAMS$LIB:\bold)
+<x>(PAMS$LIB)
+<list>(unnumbered)
+<le><emphasis>(PAMS_TCPIP.OLB\bold) - Contains the
+binary image of the TCP/IP Adapter
+Process, and object files of the TCP/IP API for building TCP/IP clients
+under VAX/VMS.
+<x>(PAMS_TCPIP.OLB)
+<x>(TCP/IP Adapter Process<xs>binary image)
+<le><emphasis>(PAMS_TCPIP.TLB\bold) - Contains the TCP/IP Adapter
+include files for building clients applications under VAX/VMS.
+<x>(PAMS_TCPIP.TLB)
+<x>(TCP/IP Adapter<xs>include files)
+<le><emphasis>(PAMS_TCPIP.OPT\bold) - Link options file
+for building a TCP/IP client under
+VAX/VMS. Use this instead of the <emphasis>(PAMS.OPT\bold) file.
+<x>(PAMS_TCPIP.OPT)
+<x>(PAMS.OPT)
+<x>(VAX/VMS)
+<endlist>
+<le><emphasis>(PAMS$DOC:*TCP*.*\bold) - <EMPHASIS>(PAMS)
+TCP/IP Adapter documentation files.
+<x>(TCP/IP Adapter<xs>documentation files)
+<LE><emphasis>(PAMS$EXE:PAMS_TCPIP_ADAPTER.EXE\bold) - The
+TCP/IP Adapter process executable.
+<x>(PAMS$EXE)
+<x>(PAMS_TCPIP_ADAPTER.EXE)
+<y>(TCP/IP Adapter Process<xs>executable - see "PAMS_TCPIP_ADAPTER.EXE")
+<le><emphasis>(PAMS$EXAMPLES:TCPIP_ADAPTER.DIR\bold) - Directory
+containing sample TCP/IP Adapter client and test programs applications:
+<x>(PAMS$EXAMPLES)
+<x>(TCPIP_ADAPTER.DIR)
+<y>(test program - see "tcptest.c")
+<list>(unnumbered)
+<le><emphasis>(samp_tcp.c\BOLD) - Sample TCP/IP Client program derived from the
+<emphasis>(VMS-PAMS) <emphasis>(SIMPLE_CLIENT.C\bold) example.
+<x>(PAMS<xs>VMS-PAMS)
+<x>(samp_tcp.c)
+<x>(SIMPLE_CLIENT.C)
+<le><emphasis>(tcptest.c\BOLD) - Another TCP/IP client program, but also
+includes some code for testing TCP/IP Adapter communications.
+<x>(tcptest.c)
+<endlist>
+<le><emphasis>(PAMS$TCPIP_ADAPTER:\bold)
+<x>(PAMS$TCPIP_ADAPTER:)
+<list>(unnumbered)
+<le><EMPHASIS>(*.h\BOLD) - The include files
+for building TCP/IP Client applications on non-VMS systems.
+<x>(Client Applications)
+<x>(TCP/IP Adapter<xs>include files)
+<le><emphasis>(p_tcpfnc.c\bold) - Source file
+<y>(p_tcpfnc.c - see "TCP/IP Adapter API")
+<x>(TCP/IP Adapter API<xs>p_tcpfnc.c)
+for the TCP/IP API communications functions;
+for building TCP/IP Client applications on non-VMS systems.
+<x>(Client Applications)
+<le><emphasis>(p_tcpip.c\bold) - Source file for the TCP/IP API
+<emphasis>(PAMS) entry functions;
+for building TCP/IP Client applications on non-VMS systems.
+<x>(Client Applications)
+<x>(TCP/IP Adapter API<xs>p_tcpip.c)
+<y>(p_tcpip.c - see "TCP/IP Adapter API")
+<le><emphasis>(PAMS$TCPIP_ADP_STARTUP.COM\bold) - Command procedure for
+starting the TCP/IP Adapter process.
+<x>(PAMS$TCPIP_ADP_STARTUP.COM)
+<y>(TCP/IP Adapter<xs>startup - see "PAMS$TCPIP_ADP_STARTUP.COM")
+<le><emphasis>(PAMS$BUILD_TCPIP_ADP.COM\bold) - Command procedure for building
+the TCP/IP Adapter executable image.
+<x>(PAMS$BUILD_TCPIP_ADP.COM)
+<x>(PAMS_TCPIP_ADAPTER.EXE<Xs>building)
+<le><emphasis>(PAMS$INSTALL_TCPIP_ADP.COM\bold) - Command procedure to
+copy separate kit
+<x>(PAMS$INSTALL_TCPIP_ADP.COM)
+<x>(TCP/IP Adapter<xs>installation)
+directories into <emphasis>(PAMS) directories. This procedure is not
+normally needed.
+<endlist>
+<endlist>
+<cp>These files are listed and described in greater detail in the next chapters.
+<x>(TCP/IP Adapter<xs>components\end)
+
+<head1>(Installation\installation)
+<x>(TCP/IP Adapter<xs>installation\begin)
+<p>The TCP/IP Adapter comes as part of the <emphasis>(VMS-PAMS) distribution
+and gets installed during the product installation procedures. After
+<X>(PAMS<xs>VMS-PAMS)
+installation, the following items should be verified:
+<list>(numbered)
+<le>That the logical <emphasis>(PAMS$TCPIP_ADAPTER:\bold) is defined and points
+to the location containing the command procedures and the include
+files for the TCP/IP Adapter API.
+<x>(PAMS$TCPIP_ADAPTER:)
+<le>That <emphasis>(PAMS$TCPIP_ADP_STARTUP.COM\bold) has been copied to
+<emphasis>(SYS$MANAGER\bold).
+<x>(SYS$MANAGER)
+<x>(PAMS$TCPIP_STARTUP.COM)
+<le>That all the files and directories listed in <reference>(components)
+are correct.
+<le>Build the <emphasis>(tcptest\bold) program, as described in the
+<emphasis>(TCP/IP Adapter Client Applications) chapter of this document.
+<le>Start the TCP/IP Adapter Process, as described in
+<emphasis>(TCP/IP Adapter process) chapter.
+<x>(tcptest.c)
+<le>Run the <emphasis>(tcptest\bold) program, as described in the
+<emphasis>(TCP/IP Adapter Client Applications) chapter and compare the results.
+<endlist>
+
+<cp>If it becomes necessary to rebuild the TCP/IP Adapter Process
+(<emphasis>(PAMS_TCPIP_ADAPTER.EXE\bold)), this can be done by executing the
+<emphasis>(PAMS$TCPIP_BUILD_ADP.COM\bold) as described in the next
+chapter.
+<x>(PAMS_TCPIP_ADAPTER.EXE)
+<x>(PAMS$TCPIP_BUILD_ADP.COM)
+<p>Copying and installing the TCP/IP Adapter API on other systems is
+described in <emphasis>(TCP/IP Adapter API) chapter.
+<x>(TCP/IP Adapter<xs>installation\end)
+<x>(TCP/IP Adapter<xs>overview\end)

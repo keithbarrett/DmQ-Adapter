@@ -1,0 +1,301 @@
+<CHAPTER>(TCP/IP Adapter Client Applications\Clients)
+<x>(Client Applications\begin)
+<page>
+<head1>(Overview\API_overview)
+<x>(TCP/IP Adapter API<xs>overview)
+<p>All of the structures and definitions in the <emphasis>(VMS-PAMS) product
+<x>(PAMS)
+(or other <emphasis>(PAMS) products)
+are available in the TCP/IP Adapter API include files. These files have
+<x>(TCP/IP Adapter API<xs>include files)
+different filenames and internal logic however, due to the need for
+functionality on non-VMS systems and compatibility with <emphasis>(PAMS)
+products for non-VMS systems (such as <emphasis>(PC-PAMS)).
+<x>(PAMS<xs>PC-PAMS)
+<y>(PC-PAMS<XS>see "PAMS")
+<reference>(pams_include_tbl)
+provides a cross-reference between the files and their <emphasis>(VMS-PAMS)
+counterparts.
+
+<table>(TCP/IP Adapter API Include file cross-reference\pams_include_tbl)
+<table_attributes>(multipage\wide)
+<table_setup>(3\13\20\30)
+<table_heads>(TCP/IP Adapter API Filename\VAX-PAMS Equivialent\Comments)
+<table_row>(p_entry.h\PAMS_C_ENTRY_POINT\Entry point definitions)
+<x>(p_entry.h)<x>(PAMS_C_ENTRY_POINT)
+<table_row>(p_proces.h\PAMS_C_PROCESS\)
+<x>(p_proces.h)<x>(PAMS_C_PROCESS)
+<table_row>(p_group.h\PAMS_C_GROUP\)
+<x>(p_group.h)<x>(PAMS_C_GROUP)
+<table_row>(p_typecl.h\PAMS_C_TYPE_CLASS\Type and Class definitions)
+<x>(p_typecl.h)
+<x>(PAMS_C_TYPE_CLASS)
+<x>(PAMS<xs>VMS-PAMS<xs>include files)
+<table_row>(p_return.h and p_aretur.h\PAMS_C_RETURN and PAMS_C_RETURN_DEF\Return code definitions)
+<x>(p_return.h)
+<x>(p_areutr.h)
+<x>(PAMS_C_RETURN)
+<x>(PAMS_C_RETURN_DEF)
+<table_row>(p_symbol.h\PAMS_C_SYMBOL_DEF\Global symbol definitions)
+<x>(p_symbol.h)
+<x>(PAMS_C_SYMBOL_DEF)
+<table_row>(sbsmsgde.h\SBS_MSG_DEF\SBS symbol definitions)
+<x>(sbsmsgde.h)
+<x>(SBS_MSG_DEF)
+<table_row>(availmsg.h\AVAIL_MSG_DEF\)
+<x>(availmsg.h)
+<x>(AVAIL_MSG_DEF)
+<table_row>(p_tcpip1.h\PAMS_C_TCPIP1\TCP/IP Adapter definitions (contents are
+identical))
+<x>(p_tcpip1.h)
+<x>(PAMS_C_TCPIP1)
+<table_row>(p_tcpip2.h\PAMS_C_TCPIP2\TCP/IP Adapter definitions (contents are
+identical))
+<x>(p_tcpip2.h)
+<x>(PAMS_C_TCPIP2)
+<endtable>
+<cp>The TCP/IP include files for non-VMS clients are designed to make client
+<x>(TCP/IP Adapter API<xs>include files)
+applications compatible with the non-VMS versions of <emphasis>(PAMS), such as
+<x>(PAMS)
+<emphasis>(PC-PAMS).
+The differences are minor and the include files contain
+definitions to handle multiple operating systems.
+
+<head1>(Differences between PAMS services and the TCP/IP Adapter API)
+<x>(TCP/IP Adapter API<xs>differences from PAMS)
+<line>(bigskip)
+
+<head2>(Use of PAMS$DEBUG logical on VMS)
+<x>(PAMS$DEBUG)
+<p>The use of <emphasis>(PAMS$DEBUG\bold) currently will not
+affect the TCP/IP Adapter API,
+and will not cause any traceback or debugging information to appear for
+the <emphasis>(PAMS_xxx\bold) calls in the client. Instead, setting the variable
+<code_example>(tcpip_debug = TRUE)
+<x>(TCP/IP Adapter API<xs>tcpip_debug<xs>see "tcpip_debug")
+<x>(tcpip_debug)
+will cause the TCP/IP API to display its own internal trace and value
+information to help with debugging.
+
+<head2>(Additional Status Return Values)
+<p>Because the TCP/IP Adapter API must support multiple systems and
+provide communications over a TCP/IP datalink, The TCP/IP API functions
+have a few additional return status values than those documented for the
+corresponding <emphasis>(PAMS) service. Also, to provide compatibility
+with all <emphasis>(PAMS) products, both an <emphasis>(SS$_NORMAL\bold) and
+a <emphasis>(PAMS__SUCCESS\bold) have been defined for reference.
+<p><reference>(status_tbl) lists the status values can be returned in
+addition to the
+<x>(PAMS__SUCCESS)
+<x>(SS$_NORMAL)
+ones listed in the <emphasis>(PAMS) documentation. These values are possible
+on ANY TCP/IP API <emphasis>(PAMS) function call.
+<table>(Additional Status return values\status_tbl)
+<table_attributes>(multipage\wide)
+<table_setup>(2\20\40)
+<table_heads>(Symbol\Description)
+<table_row>(PAMS__PAMSDOWN\Message Bus is inaccessible or the TCP/IP Adapter
+Process is not available.)
+<x>(PAMS__PAMSDOWN)
+<table_row>(PAMS__NOTSUPPORTED\The <emphasis>(PAMS) function
+referenced is not available with the TCP/IP Adapter API, or the
+TCP/IP Adapter Process currently running on the host system
+does not support this release of the TCP/IP API.)
+<x>(PAMS__NOTSUPPORTED)
+<table_row>(PAMS__NETERROR\Unrecoverable TCP/IP communications error
+encountered)
+<x>(PAMS__NETERROR)
+<table_row>(PAMS__SUCCESS\Success. On VMS, this symbol has the same meaning and value as <emphasis>(SS$_NORMAL\bold))
+<table_row>(PAMS__BIGBLKSIZ\Attempt to build or send a message larger than the maximum TCP/IP message size allowed)
+<x>(PAMS__BIGBLKSIZ)
+<endtable>
+<cp>To keep product compatibility, an unrecoverable TCP/IP communications
+error will result in a return status of <emphasis>(PAMS__PAMSDOWN\bold) or
+<emphasis>(PAMS__NETERROR\bold). If there is a need to see the specific
+error status that resulted; the client program can reference the external
+integer variable <emphasis>(tcpip_status\bold), which will contain the 
+returned error value (<emphasis>(errno)) for the socket call.
+
+<head2>(Other Differences and Restrictions)
+<p>See <reference>(limits_appendix) for a list of the
+current restrictions and limitations of using the TCP/IP Adapter and API.
+<x>(TCP/IP Adapter<xs>restrictions)
+<x>(TCP/IP Adapter<xs>limitations)
+
+<head1>(Creating Client Applications\building_clients)
+<x>(Client Applications)
+<p>The simplest way to write a TCP/IP Adapter client application is
+to first write and debug it directly on an existing <emphasis>(PAMS) system,
+such as <emphasis>(VMS-PAMS) or <emphasis>(PC-PAMS), and follow that
+<x>(PAMS)
+product's documentation. <emphasis>(VMS-PAMS) is a requirement for the
+TCP/IP Adapter, so it should always be available as a resource. 
+Client applications can then be easily modified to run using the TCP/IP
+Adapter API, by following the instructions in <reference>(modifying_clients).
+<p>Client's can also be written and tested on non-PAMS systems using
+the TCP/IP Adapter. The message bus and
+the TCP/IP Adapter Process will need to be
+running on the VMS host system first, perhaps interactively
+with the <emphasis>(PAMS$DEBUG\bold)
+<x>(PAMS$DEBUG)
+logical enabled to help with debugging. It is also
+suggested that the <emphasis>(samp_tcp\bold) program supplied with the
+<x>(samp_tcp.c)
+product be tested to ensure that
+the entire TCP/IP Adapter "environment" performs as expected. Clients can
+then be coded and tested as described in the <emphasis>(PAMS-VMS)
+documentation, with the exceptions noted in <reference>(modifying_clients).
+
+<head1>(Modifying Client Applications to use the TCP/IP Adapter\modifying_clients)
+<x>(Client Applications<xs>modifications\begin)
+<p>The modifications to a client application for use with the TCP/IP Adapter API
+are minor, and are such that a client application having these modifications
+will still compile and execute with any <emphasis>(PAMS) package without the
+need for the TCP/IP Adapter. The changes required fall into two categories:
+<list>(numbered)
+<le>Changes and additions to the <code_example>(#include) statements.
+<le>Setting two external variables to contain the
+<emphasis>(host name) and <emphasis>(port number) of the desired TCP/IP
+Adapter Process to be used for communications.
+<endlist>
+<cp>This list and the chapter sections that follow
+detail all the changes necessary to
+use the TCP/IP API.
+<list>(numbered)
+<le>Be sure to include the <emphasis>(errno.h\bold) and
+<x>(errno)
+<emphasis>(stdio.h\bold) file at the beginning of the program.
+<le>Include the TCP/IP Socket definition files. These vary slightly for
+VMS and non-VMS systems. <reference>(socket_inc_ex) shows how to
+code this for portability with both environments. The code for including
+these files MUST come before the include files for <emphasis>(PAMS).
+<le>Add <code_example>(#include) statements for the <emphasis>(PAMS) TCP/IP
+Adapter include files; these must be placed AFTER all other <emphasis>(PAMS)
+include statements. It is also recommended that the include statements be
+changed to better support multi-system compatibility, as shown in
+<reference>(socket_inc_ex).
+<note>(Note)If the client application source was originally coded for
+use with <emphasis>(PC-PAMS), some additional changes may be required due to
+incompatibilities with early releases of that product.
+Please consult <reference>(PCPAMS_APPENDIX) for details.
+<endnote>
+<example>(Recommended C code for TCP/IP and PAMS <emphasis>(#include\bold) statements\socket_inc_ex)
+<example_attributes>(wide)
+<example_file>(socket_includes.example)
+<endexample>
+<le>Set the values of two external variables;
+<code_example>(adapter_port) and <code_example>(*adapter_host). These
+variables need to be set BEFORE any TCP/IP Adapter API function is 
+referenced. <code_example>(*adapter_host) needs to be set to the address
+of a <emphasis>(string)
+containing the name of the host system that contains the
+desired the TCP/IP Adapter Process, and <code_example>(adapter_port)
+(<emphasis>(unsigned integer)) needs to
+be set to the port number that TCP/IP Adapter Process is using for
+socket communications. <reference>(port_arg_ex1)
+shows sample code on how to set these variables by specifying
+them as arguments during client program activation.
+<example>(Setting <emphasis>(host name) and <emphasis>(port number) by arguments\port_arg_ex1)
+<x>(adapter_port)
+<x>(adapter_host)
+<example_attributes>()
+<example_file>(main_args.example)
+<endexample>
+<le>If desired, the external <emphasis>(char)
+variable <code_example>(tcpip_debug) can be set to
+<code_example>(tcpip_debug = TRUE). This will cause the TCP/IP Adapter API
+<x>(tcpip_debug)
+to print trace and debugging information as it executes. Using
+this variable is optional. <reference>(debug_ex) shows a suggested method
+of setting this variable, and some sample output appears in
+<reference>(debug_appendix).
+<example>(Setting <code_example>(tcpip_debug)\debug_ex)
+<example_attributes>()
+<example_file>(debug.example)
+<endexample>
+<le>Although it may not necessary, it is
+recommended that all references to <emphasis>(SS$_NORMAL\bold) be
+changed to <emphasis>(PAMS__SUCCESS\bold).
+<x>(PAMS__SUCCESS)
+<le>Recompile the program and link it with the <emphasis>(p_tcpfnc\bold) and
+<emphasis>(p_tcpip\bold) API objects.
+<x>(tcpfnc.c)
+<endlist>
+<x>(Client Applications<xs>modifications\end)
+
+<head1>(<emphasis>(samp_tcp\bold) and <emphasis>(tcptest\bold))
+<x>(samp_tcp.c\begin)
+<x>(tcptest.c\begin)
+<p><emphasis>(samp_tcp.c\bold) is the <emphasis>(simple_client.c\bold) program,
+provided with <emphasis>(PAMS) product, modified for use with the
+TCP/IP Adapter and to be operating system independent. The
+<emphasis>(tcptest\bold) test program is very similar, except that it
+performs a communications test to the TCP/IP Adapter process and displays
+information concerning system configuration and whether the Client
+operating system and TCP/IP Adapter API are supported. When using the
+TCP/IP Adapter for the first time, it is suggested that the
+<emphasis>(tcptest\bold) program be compiled and run before any other
+client applications. <reference>(tcptest_example) show a sample
+output from <emphasis>(tcptest\bold).
+<x>(tcptest.c<xs>output)
+
+<example>(Sample output from <emphasis>(tcptest\bold)\tcptest_example)
+<example_attributes>()
+<example_file>(tcptest.example)
+<endexample>
+
+<head1>(Compiling and Linking TCP/IP Adapter Clients on non-VMS)
+<x>(Client Applications<XS>compiling)
+<x>(Client Applications<xs>linking)
+<x>(Linking)
+<p>The TCP/IP API should not normally require
+special compile or linking options. Datatypes are explicitly declared
+in full and the program code is designed not to make assumptions concerning
+the operating environment. Compile and linking programs vary per
+system and the user will need to reference the applicable documentation.
+The <emphasis>(samp_tcp\bold) and <emphasis>(tcptest\bold)
+sample client applications
+supplied with the TCP/IP Adapter can be used to test compiling and
+linking.
+
+<head1>(Compiling and Linking TCP/IP Adapter Clients on VMS)
+<p>On VMS system, using the TCP/IP Adapter in client
+applications is a matter of referencing different files in
+<emphasis>(PAMS$LIB:\bold). <reference>(compile_example) shows the
+<x>(PAMS$LIB)
+standard method of compiling and linking the <emphasis>(samp_tcp\bold)
+program:
+<example>(Compiling a TCP/IP Adapter client on VMS\compile_example)
+<example_attributes>(keep)
+<example_file>(compile.example)
+<endexample>
+<x>(tcptest.c\end)
+<x>(samp_tcp.c\end)
+
+<head1>(Debugging Client Applications)
+<y>(debugging<xs>see "Client Applications")
+<y>(Client Applications<xs>debugging<xs>see also "tcpip_debug")
+<x>(Client Applications<xs>debugging)
+<p>Debugging a client application typically involves including the
+<code_example>(tcpip_debug = TRUE) statement in the client, and interactive
+<x>(tcpip_debug)
+startup of the TCP/IP Queue Adapter Process on the VMS system with the
+<emphasis>(PAMS$DEBUG\bold) enabled. The following steps will create
+<x>(PAMS$DEBUG)
+a useful debugging environment:
+<list>(numbered)
+<le>Place a <code_example>(tcpip_debug = TRUE) statement at the beginning
+of the client application code and rebuild the application.
+<le>On the host VMS system, perform an interactive startup of the
+TCP/IP Adapter Process as described in the <emphasis>(TCP/IP Adapter Process)
+chapter, making sure to set the <emphasis>(PAMS$DEBUG\bold) logical
+first.
+<le>Startup the client application, using whatever debugging tools are
+available.
+<endlist>
+<cp>As the client application executes, it will display internal TCP/IP
+Adapter API trace and variable information. As communications occur to the
+TCP/IP Adapter Process on the VMS host system, <emphasis>(PAMS) trace
+information will appear there also.
+<x>(Client Applications\end)

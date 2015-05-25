@@ -1,0 +1,39 @@
+Test #6
+
+
+2 processes on the same RISC 31000 (Ultrix) talking via a DmQA
+running on a 3900 (XHOST). Stats are for roundtrip messages.
+
+
+
+message_length?                             :1000
+Send recoverable messages? 0 = no, 1 = yes  :
+Test iterations? 0 = loop forever           :5000
+<CR> to start:
+006 sec Total rcvd:     200     Incr:   100     16.667/sec
+009 sec Total rcvd:     367     Incr:   167     18.556/sec
+009 sec Total rcvd:     553     Incr:   186     20.667/sec
+010 sec Total rcvd:     760     Incr:   207     20.700/sec
+011 sec Total rcvd:     967     Incr:   207     18.818/sec
+009 sec Total rcvd:     1155    Incr:   188     20.889/sec
+010 sec Total rcvd:     1364    Incr:   209     20.900/sec
+011 sec Total rcvd:     1573    Incr:   209     19.000/sec
+009 sec Total rcvd:     1763    Incr:   190     21.111/sec
+012 sec Total rcvd:     1974    Incr:   211     17.583/sec
+008 sec Total rcvd:     2150    Incr:   176     22.000/sec
+011 sec Total rcvd:     2370    Incr:   220     20.000/sec
+011 sec Total rcvd:     2570    Incr:   200     18.182/sec
+009 sec Total rcvd:     2752    Incr:   182     20.222/sec
+010 sec Total rcvd:     2954    Incr:   202     20.200/sec
+010 sec Total rcvd:     3156    Incr:   202     20.200/sec
+010 sec Total rcvd:     3358    Incr:   202     20.200/sec
+010 sec Total rcvd:     3560    Incr:   202     20.200/sec
+011 sec Total rcvd:     3762    Incr:   202     18.364/sec
+009 sec Total rcvd:     3946    Incr:   184     20.444/sec
+010 sec Total rcvd:     4150    Incr:   204     20.400/sec
+010 sec Total rcvd:     4354    Incr:   204     20.400/sec
+011 sec Total rcvd:     4558    Incr:   204     18.545/sec
+009 sec Total rcvd:     4743    Incr:   185     20.556/sec
+011 sec Total rcvd:     4949    Incr:   206     18.727/sec
+
+Test done: sent:5000 rcvd:5000 rate:19.685/sec

@@ -1,0 +1,25 @@
+<code_example>
+main(argc,argv)
+int	argc;
+char	**argv;
+{
+	short	msg_area_size = BUF_SIZE+1;
+
+	if (argc != 3 )
+	{
+	    printf("?Host or port specification missing.\n");
+	    printf("Usage: client hostname portnumber.\n");
+	    printf("Note: hostname should be in quotes.\n");
+	    exit();
+	}
+	else
+	{
+	    if ((adapter_port = atoi(argv[2])) == 0)
+	    {
+		printf("Port number cannot be zero\n");
+		exit();
+	    }
+	    adapter_host = argv[1];
+	}
+	/* Examine and use passed parameters for host and port */
+<endcode_example>

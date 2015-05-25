@@ -1,0 +1,28 @@
+<chapter>(Introduction\introduction)
+<page>
+<p>This document describes the <emphasis>(PAMS TCP/IP Queue Adapter) software,
+<x>(TCP/IP Adapter<xs>description)
+(also referred to in this document as the
+<emphasis>(TCP/IP Adapter)), a software package included in the
+<emphasis>(VMS-PAMS) product. The TCP/IP Adapter will allow
+<x>(PAMS<xs>VMS-PAMS)
+<x>(Client Applications)
+most <emphasis>(PAMS) client applications, with minimal changes, to use TCP/IP
+communications to access the message bus through a host adapter process.
+The application client can reside on the same host system as the TCP/IP adapter,
+or on a remote system connected by a TCP/IP datalink to the host.
+<x>(TCP/IP Adapter Process<xs>using multiple adapters)
+Multiple TCP/IP clients can communicate with each other, or with other
+remote systems, by using multiple TCP/IP adapters on the host system.
+The client system(s) must support
+TCP/IP socket calls and the C programming language.
+<x>(TCP/IP Sockets)
+Digital's <emphasis>(VMS/Ultrix Connection)
+<x>(VMS/Ultrix Connection)
+product is required on all VAX/VMS systems that are used as message bus
+<x>(VAX/VMS)
+host systems running TCP/IP Adapters.
+<p>
+This document will describe the architecture, features, and limitations
+of using the TCP/IP Adapter, as well as provide instructions for
+creating or modifying client applications to use it.

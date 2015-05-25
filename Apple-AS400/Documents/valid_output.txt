@@ -1,0 +1,148 @@
+Checking unsupported delivery modes and uma's... 
+Put: BADUMA            , WF_MEM:0                 , DISCL:0                 
+Put: BADUMA            , WF_MEM:0                 , DLQ  :0                 
+Put: BADUMA            , WF_MEM:0                 , DLJ  :0                 
+Put: BADUMA            , WF_MEM:0                 , RTS  :0                 
+Put: BADUMA            , WF_MEM:0                 , SAF  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DISC :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DISCL:0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DLQ  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DLJ  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , RTS  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , SAF  :0                 
+Put: BADUMA            , NN_MEM:0                 , DLQ  :0                 
+Put: BADUMA            , NN_MEM:0                 , DLJ  :0                 
+Put: BADUMA            , NN_MEM:0                 , SAF  :0                 
+Testing WF delivery modes ...
+Put: NORMAL            , WF_MEM:NORMAL            , DISC :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , SAF  :NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , WF_SAF:ENQUEUED          , SAF  :NO_UMA            
+Put: NORMAL            , WFQ   :NORMAL            , 0    :NO_UMA            
+Testing AK delivery modes ...
+Put: NORMAL            , AK_DQF:NORMAL            , DISC :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DISCL:UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DLQ  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DLJ  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , RTS  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , SAF  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , SAF  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DISC :UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DISCL:UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DLQ  :UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DLJ  :UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , RTS  :UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , SAF  :UMA_NA            
+Ack: NORMAL            , AK_SAF:ENQUEUED          , SAF  :NO_UMA            
+Testing NN delivery modes ...
+Put: NORMAL            , NN_MEM:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_MEM:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_MEM:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DLQ  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DLJ  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , SAF  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DLQ  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DLJ  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , SAF  :UMA_NA            
+Put: NORMAL            , DG_LOG:NORMAL            , 0    :UMA_NA            
+Put: NORMAL            , DG    :NORMAL            , 0    :UMA_NA            
+Put: NORMAL            , RTS   :NORMAL            , 0    :UMA_NA            
+Checking unsupported delivery modes and uma's... 
+Put: BADUMA            , WF_MEM:0                 , DISCL:0                 
+Put: BADUMA            , WF_MEM:0                 , DLQ  :0                 
+Put: BADUMA            , WF_MEM:0                 , DLJ  :0                 
+Put: BADUMA            , WF_MEM:0                 , RTS  :0                 
+Put: BADUMA            , WF_MEM:0                 , SAF  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DISC :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DISCL:0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DLQ  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , DLJ  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , RTS  :0                 
+Put: BADDELIVERY       , AK_MEM:0                 , SAF  :0                 
+Put: BADUMA            , NN_MEM:0                 , DLQ  :0                 
+Put: BADUMA            , NN_MEM:0                 , DLJ  :0                 
+Put: BADUMA            , NN_MEM:0                 , SAF  :0                 
+Testing WF delivery modes ...
+Put: NORMAL            , WF_MEM:NORMAL            , DISC :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , WF_DQF:ENQUEUED          , SAF  :NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , DISC :NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , DISCL:NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , DLQ  :NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , DLJ  :NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , RTS  :NO_UMA            
+Put: NORMAL            , WF_SAF:STORED            , SAF  :NO_UMA            
+Put: NORMAL            , WFQ   :NORMAL            , 0    :NO_UMA            
+Testing AK delivery modes ...
+Put: NORMAL            , AK_DQF:NORMAL            , DISC :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DISC :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DISCL:UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DISCL:NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DLQ  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DLQ  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , DLJ  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , DLJ  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , RTS  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , RTS  :NO_UMA            
+Put: NORMAL            , AK_DQF:NORMAL            , SAF  :UMA_NA            
+Ack: NORMAL            , AK_DQF:ENQUEUED          , SAF  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DISC :UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , DISC :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DISCL:UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , DISCL:NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DLQ  :UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , DLQ  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , DLJ  :UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , DLJ  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , RTS  :UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , RTS  :NO_UMA            
+Put: NORMAL            , AK_SAF:NORMAL            , SAF  :UMA_NA            
+Ack: NORMAL            , AK_SAF:STORED            , SAF  :NO_UMA            
+Testing NN delivery modes ...
+Put: NORMAL            , NN_MEM:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_MEM:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_MEM:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DLQ  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , DLJ  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_DQF:NORMAL            , SAF  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DISC :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DISCL:UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DLQ  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , DLJ  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , RTS  :UMA_NA            
+Put: NORMAL            , NN_SAF:NORMAL            , SAF  :UMA_NA            
+Put: NORMAL            , DG_LOG:NORMAL            , 0    :UMA_NA            
+Put: NORMAL            , DG    :NORMAL            , 0    :UMA_NA            
+Put: NORMAL            , RTS   :NORMAL            , 0    :UMA_NA            

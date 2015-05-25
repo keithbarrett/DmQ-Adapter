@@ -1,0 +1,189 @@
+<chapter>(The TCP/IP Adapter Process (PAMS_TCPIP_ADAPTER.EXE)\ADP_process)
+<page>
+<head1>(Overview)
+<x>(TCP/IP Adapter Process<xs>overview)
+<p>The TCP/IP Adapter normally runs as a VMS background process
+and waits for a TCP/IP
+connection request from the client. The connection request occurs
+automatically when the client calls the <emphasis>(PAMS_DCL_PROCESS\bold)
+<x>(PAMS functions<xs>PAMS_DCL_PROCESS)
+function in the TCP/IP Adapter API. The TCP/IP
+Adapter completes the connection, calls <emphasis>(PAMS_DCL_PROCESS\bold)
+as specified
+by the client application, and returns the results back to the client. TCP/IP
+messages are sent from the client to the TCP/IP adapter and back as needed.
+The connection is terminated
+<x>(Client Applications)
+when the client application or TCP/IP Adapter terminates, or the
+client calls the <emphasis>(PAMS_EXIT\bold) function in the API. The TCP/IP
+<x>(PAMS functions<xs>PAMS_EXIT)
+Adapter then waits for a new connection request.
+<x>(TCP/IP Adapter<xs>connection requests)
+<P>Each TCP/IP Adapter can serve any TCP/IP client, but can only handle
+one connected client at a time. A client attempting to connect to a
+TCP/IP Adapter process that is already in use may appear to "hang"
+until that TCP/IP Adapter process is available. Once free, the connection
+request will be processed and the client application will "wake up".
+<p>The TCP/IP adapter is designed to
+tolerate or recover from most errors. In the event that an unexpected and
+unrecoverable error situation occurs that terminates the TCP/IP Adapter
+Process, an operator notification message will be sent to the system's console
+terminal (OPA0:) and (optionally) mailed to a specified user account. The
+error condition itself, or any output produced by setting the
+<emphasis>(PAMS$DEBUG\bold) logical, can be (optionally) captured in a log file.
+
+<head1>(Building the TCP/IP Adapter Process)
+<p>The <emphasis>(PAMS$BUILD_TCPIP_ADP.COM\bold)
+<x>(PAMS$BUILD_TCPIP_ADP.COM)
+procedure in the <emphasis>(PAMS$TCPIP_ADAPTER\bold)
+<x>(PAMS$TCPIP_ADAPTER:)
+directory will (re)build the TCP/IP Adapter executable image
+<x>(TCP/IP Adapter Process<xs>building)
+<emphasis>(PAMS_TCPIP_ADAPTER.EXE\bold). The <emphasis>(PAMS)
+<x>(PAMS_TCPIP_ADAPTER.EXE)
+<x>(TCP/IP Adapter<xs>installation)
+installation procedures will automatically
+execute this procedure during product installation, but it can be re-run
+manually at anytime. Customizing <emphasis>(PAMS) or installing
+patch kits may require
+a rebuild of the TCP/IP Adapter. <reference>(build_example) demonstrates
+this procedure.
+<example>(Sample rebuild of the <emphasis>(PAMS_TCPIP_ADAPTER.EXE\bold) image\build_example)
+<example_attributes>()
+<example_file>(build.example)
+<endexample>
+
+<HEAD1>(Starting the TCP/IP Adapter Process\startup)
+<y>(UCX - see "VMS/Ultrix Connection")
+<x>(TCP/IP Adapter Process<xs>startup)
+<p>Before the TCP/IP Adapter process can be started, the
+<emphasis>(VMS/Ultrix Connection) <emphasis>(UCX) software must be
+<x>(VMS/Ultrix Connection)
+installed and started.
+Complete details for are provided in the <emphasis>(VMS/Ultrix Connection)
+documentation. For the TCP/IP Adapter, it is only necessary to start the INET
+processes.
+<y>(INET - see "VMS/Ultrix Connection")
+<p>Once the INET is started, a TCP/IP port number must be selected.
+<x>(TCP/IP ports)
+Port numbers range from 1 to 65535. Any port number can be
+used, but some ports are
+reserved for specific tasks (ports 1-255), some require privileges
+(ports 1-1023), and some may
+already be in use. In addition to selecting a port number, the local system
+must be defined in the <emphasis>(UCX) database. Consult the
+<emphasis>(VMS/Ultrix Connection)
+System Management documentation for complete details.
+<p>Once a port has been selected, starting the TCP/IP Adapter process is
+just a matter of executing the <emphasis>(PAMS$TCPIP_ADP_STARTUP.COM\bold)
+<x>(TCP/IP Adapter Process<xs>startup)
+<x>(PAMS$TCPIP_ADP_STARTUP.COM)
+procedure and supplying the port number:
+<example>(Starting the TCP/IP Adapter Process\startup_example)
+<example_attributes>()
+<interactive>
+<s>($ )<u>(@SYS$MANAGER:PAMS$TCPIP_ADP_STARTUP <emphasis>(port\italic))
+<s>()
+<s>(Starting TCP/IP Queue Adapter in group <emphasis>(nn\italic), on port <emphasis>(port\italic))
+<s>(%RUN-S-PROC_ID, identification of created process is <emphasis>(nnnnnnnn\italic))
+<endinteractive>
+<endexample>
+<line>(bigskip)
+<definition_list>
+<DEFINITION_LIST_HEAD>(@SYS$MANAGER:PAMS$TCPIP_ADP_STARTUP  port [mail-dest] [output] [pams-log])
+<x>(PAMS$TCPIP_ADP_STARTUP.COM<xs>parameters)
+<deflist_item>(<emphasis>(port\italic))
+<deflist_def>
+TCP/IP port number to use for socket connection.
+<y>(TCP/IP Sockets<xs>see also "TCP/IP ports")
+<deflist_item>(<emphasis>(mail-dest (optional)\italic))
+<deflist_def>
+Username to receive a mail message notification if the TCP/IP Adapter
+process terminates abnormally.
+<deflist_item>(<emphasis>(output (optional)\italic))
+<deflist_def>
+Output file to use for SYS$OUTPUT; default is NL:. If specified, the output
+file will contain any error messages that occurred if the TCP/IP Adapter
+process terminates abnormally. Also, any output produced by setting the
+PAMS$DEBUG logical will also appear here.
+<x>(PAMS$DEBUG)
+<deflist_item>(<emphasis>(pams-log (optional)\italic))
+<deflist_def>
+Sets the <emphasis>(PAMS$DEBUG\bold)
+logical to the specified value before starting the TCP/IP
+Adapter. If the <emphasis>(output\italic) parameter was specified, all
+output produced will be captured in the log file. Consult the <emphasis>(PAMS)
+documentation for further information
+<x>(PAMS)
+concerning the <emphasis>(PAMS$DEBUG\bold) logical and possible values.
+<enddefinition_list>
+<Note>(Note)When specifying the third parameter (<emphasis>(output\italic))
+without the second (<emphasis>(mail-dest\italic)) parameter; a double-quote
+( <emphasis>(" "\bold) ) must be used in place of the second parameter.
+(Ex: <emphasis>(@SYS$MANAGER:PAMS$TCPIP_ADP_STARTUP 1025 " " ADAPTER.LOG\bold)).
+This same rule applies when specifying the fourth parameter without using
+the second or third parameter.
+<x>(PAMS$TCPIP_ADP_STARTUP.COM<xs>skipping parameters)
+<endnote>
+<p>Once started, the program runs as a background process with a process
+name of <emphasis>(TCPADP_ggg-pppp\bold), where <emphasis>(ggg) is the
+group number and <emphasis>(pppp) is the port number.
+
+<head2>(Interactive Execution)
+<x>(TCP/IP Adapter Process<xs>startup<xs>interactive)
+<y>(TCP/IP Adapter Process<xs>startup<xs>see also "PAMS$TCPIP_ADP_STARTUP.COM")
+<p>When debugging clients applications, it is sometimes
+easier to examine the output
+<x>(Client Applications<xs>debugging)
+of the TCP/IP Adapter (produced by setting <emphasis>(PAMS$DEBUG\bold)
+<x>(PAMS$DEBUG)
+or encountering a
+non-recoverable error) by running it as an interactive terminal session
+rather than as a background process.
+<list>(numbered)
+<le>Log into a privileged account on the desired VAX/VMS node and enable
+privileges. (Note: <emphasis>(VMS/Ultrix Connection) INET must be running)).
+<x>(VMS/Ultrix Connection)
+<le>Set your <emphasis>(PAMS) group and make
+sure that the <emphasis>(PAMS$*\bold) logicals are set as needed.
+<X>(PAMS<xs>logicals)
+<le>Set the logical <emphasis>(PAMS$DEBUG\bold) if desired.
+<x>(PAMS$DEBUG)
+<le>Define a global symbol for the adapter as follows:
+<line>(smallskip)
+<emphasis>($ TCPIP_ADAPTER == "$PAMS$EXE:PAMS_TCPIP_ADAPTER"\bold)
+<x>(TCP/IP Adapter Process<xs>global symbol)
+<x>(PAMS$EXE)
+<x>(PAMS_TCPIP_ADAPTER.EXE)
+<le>Start the TCP/IP Adapter for the desired port by typing the symbol name,
+followed by the desired port number (as shown in example
+<reference>(startup_example2)).
+<endlist>
+<example>(Starting the TCP/IP Adapter Process Interactively\startup_example2)
+<example_attributes>()
+<interactive>
+<s>()
+<s>($ )<u>(SET PROCESS/PRIV=ALL)
+<s>($ )<U>(TCPIP_ADAPTER == "$PAMS$EXE:PAMS_TCPIP_ADAPTER")
+<s>($ )<U>(DEFINE PAMS$DEBUG "TRACE")
+<s>($ )<U>(TCPIP_ADAPTER <emphasis>(port\italic))
+<s>()
+<s>(Message Bus TCP/IP Adapter V<emphasis>(n.n-nn\italic), protocol revision <emphasis>(nn\italic))
+<s>()
+<s>(Port number specified = <emphasis>(port\italic))
+<s>(Host address of <emphasis>(NODE\italic) is <emphasis>(n.n.n.n\italic))
+<s>()
+<ELLIPSIS>
+<endinteractive>
+<endexample>
+<cp>
+<line>(smallskip)
+A TCP/IP Adapter running interactively can be aborted by using
+<x>(TCP/IP Adapter Process<xs>aborting/terminating)
+<emphasis>(Control/Y) and
+typing <emphasis>(EXIT) at DCL. If the image appears to be "hung"
+after typing <emphasis>(EXIT), repeat the sequence again.
+Because of the background communication connections that may be in use; the
+user may have to perform the "<emphasis>(Control/Y) and <emphasis>(EXIT)"
+sequence twice to finally terminate the image.
+<x>(VAX/VMS<xs>Control/Y)

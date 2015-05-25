@@ -1,0 +1,173 @@
+<front_matter>(front)
+<title_page>
+<TITLE>(PAMS <line>TCP/IP Queue Adapter)
+<p>
+Efficient Task-to-Task Communication
+<ABSTRACT>(October 1990)
+This document describes the features, restrictions, and use of the
+PAMS TCP/IP Queue Adapter for utilizing basic PAMS functionality on
+TCP/IP connected systems.
+<ENDABSTRACT>
+<revision_info>(Revision/Update Information:\This is a new document.)
+<revision_info>(Operating System and Version:\VAX/VMS Version V5.2 or higher
+ <line>ULTRIX V3.0 or higher
+<revision_info>(Software Version:\VAX PAMS V3.0 (Field Test)
+ <line>VMS/Ultrix Connection V1.2 or higher
+<endtitle_page>
+
+<copyright_page>
+<copyright_page_formatting>(controlled)
+<print_date>(October 1990)
+<p>
+The information is this document is subject to change without
+notice and should not be construed as a commitment by 
+Digital Equipment Corporation.  Digital Equipment Corporation
+assumes no responsibility for any errors that may appear 
+in this document.
+<p>
+The software described in this document is furnished under a
+license and may be used or copied only in accordance with the
+terms of such license.
+<p>
+No responsibility is assumed for the use or reliability of
+software on equipment that is not supplied by Digital 
+Equipment Corporation or its affiliated companies.
+
+<copyright_date>(1990\DIGITAL Equipment Corporation)
+<p>All Rights Reserved
+<line>Printed in U.S.A.
+<line>(bigskip)
+The following are trademarks of DIGITAL Equipment Corporation:
+<table>
+<table_setup>(3\13\13)
+<table_row>(VAX        \VMS        \ULTRIX)
+<table_row>(VAXcluster \DECnet     \DEC)
+<table_row>(           \           \<dec_logo>)
+<endtable>
+<endcopyright_page>
+<endfront_matter>
+<PAGE>
+<chapter>(Description\description)
+<P>This software package will allow a PAMS client, with minimal changes, to
+execute transparently on a remote system by using TCP/IP communications.
+<HEAD1>(Overview)
+<P>The client program is linked to an "alternative" PAMS library, called the
+PAMS TCP/IP API (application programming interface).
+When the resulting client application executes a PAMS
+service call, the call will
+automatically be formatted into a TCP/IP message and sent to the
+PAMS_TCPIP_ADAPTER (hereafter referred to as the "Adapter"). The Adapter parses
+the message and executes the "real" PAMS service. The returned status and
+information is then packed into a response message and sent back to the
+client's API, where it is processed and returned to the calling application as
+if that PAMS function call was performed on the local system.
+.skip
+.lt
+                  +---------------------------+
+             .-   |   Application program     |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+     Client -+    |   PAMS function call      |
+             |    +---------------------------+
+             |    | Reformat parameters into  |
+             |    |       a TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |  adapter process and wait |
+                  +---------------------------+
+                                \
+                                /
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |      PAMS function call   |
+             |    +---------------------------+
+    adapter -+    |   Perform PAMS function   |
+             |    | and format results into a |
+             |    |         TCP message       |
+             |    +---------------------------+
+             |    |   Perform TCP to remote   |
+             `-   |       Client and wait     |
+                  +---------------------------+
+                                \
+                                /
+                                V
+                  +---------------------------+
+             .-   |    Receive TCP message    |
+             |    +---------------------------+
+             |    | Reformat message into the |
+             |    |   PAMS Returned values    |
+             |    +---------------------------+
+     Client -+    |   Return to application   |
+             |    +---------------------------+
+             |                  |
+             |                  V
+             |    +---------------------------+
+             `-   |   Application program     |
+                  +---------------------------+
+.el
+.skip
+.i
+The Adapter must run under VMS 5.1 or higher and requires UCX 1.2 or higher
+and PAMS V2.5 or higher; DECnet is not required unless the local VMS PAMS
+system needs to communicate with PAMS groups/servers running on other systems.
+The TCP/IP client should be able to run under any system supporting TCP/IP
+socket communications; although only VMS and Ultrix have currently been tested.
+.hl Contents
+.i
+This software is broken down into the following components:
+.list
+.le; The VMS_TCPIP_ADAPTER. This program runs under the VMS system and will
+execute the PAMS commands received from the TCP/IP client.
+.le; The Common PAMS TCP/IP functions (P_TCPFNC). These functions are used by
+both the client and the Adapter to perform basic TCP/IP communications.
+.le; The TCP/IP PAMS services (P_TCPIP). These are replacement functions
+for the standard PAMS services, but have the same extry point definitions.
+When a client program is linked to these functions instead of the PAMS library,
+the PAMS call will be formated into a TCP/IP message and send to the Adapter
+for execution. The Adapter will respond with the results and this will be
+returned to the calling application.
+.le; The include files. In addition to the necessary files for TCP/IP socket
+communications, the client must also include two PAMS TCP/IP files.
+.le; Sample Client program and simple test program.
+.els
+.skip
+.hl +1   Sample Client Program _& Test Program
+.i
+The sample Client program (SAMP_TCP.C) and the PAMS TCP/IP test program
+(TCPTEST.C) provide examples of a simplistic client
+process that essentially performs the following functions:
+
+.lt
+		  +---------------------------+
+		  |  Declare Process to PAMS  |
+		  |  using PAMS_DCL_PROCESS   |
+		  +---------------------------+
+			        |
+                                V
+                  +---------------------------+
+                  | Initialize Variables, etc.|
+                  +---------------------------+
+              +---------------->|
+              |                 V
+              |   +---------------------------+
+              |   |   Wait for a message to   |
+              |   |     be received using     |
+              |   |       PAMS_GET_MSGW       |
+              |   +---------------------------+
+              |                 |
+              |                 V
+              |   +---------------------------+
+              |   |   Send "canned" response  |
+              |   |  message to client using  |
+              |   |       PAMS_PUT_MSG        |
+              |   +---------------------------+
+              |                 |
+              +---------<-------+
+.el
+.chapter	Writing/Modifying Client Applications to Use This Software
+.chapter	Notes

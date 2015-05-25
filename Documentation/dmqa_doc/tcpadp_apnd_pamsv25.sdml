@@ -1,0 +1,26 @@
+<appendix>(Using the TCP/IP Adapter under PAMS V2.5\PAMSV25_APPENDIX)
+<x>(PAMS<xs>PAMS V25)
+<p>The TCP/IP Adapter process will support connections from clients designed
+for <emphasis>(PAMS V2.5 or 3.0).
+The Adapter Process must be built against 
+the highest version of <emphasis>(PAMS) that it will have to
+support in a client
+application. In other words; if the Adapter process will only be connecting
+to V2.5 clients, then the Adapter Process can be built against
+<emphasis>(PAMS V2.5) or
+<emphasis>(PAMS V3.0). If the Adapter Process must support both
+V2.5 clients <emphasis>(AND\BOLD) V3.0 clients,
+then the Adapter process must be build against <emphasis>(PAMS V3.0).
+<p> On the client side; 
+the <emphasis>(p_tcpip1.h) file will require a modification and the 
+Client applications and the <emphasis>(p_tcpfnc) and <emphasis>(p_tcpip)
+modules will need to be re-compiled. The modification is to "un-comment" the
+definition for the "PAMSV25" symbol near the beginning of the file.
+After that, re-compile
+<emphasis>(p_tcpip) and <emphasis>(p_tcpfnc). If the clients Applications
+are to run on the VMS host system, then <emphasis>(p_tcpip1.h) will have to
+be re-inserted in the PAMS$TCPIP.TLB library as <emphasis>(pams_c_tcpip1), and
+the <emphasis>(p_tcpip) and <emphasis>(p_tcpfnc) modules will have to be
+re-inserted into the PAMS$LIB:PAMS_TCPIP.OLB object library. Finally,
+re-compile and re-link the Client Application program(s).
+<endappendix>

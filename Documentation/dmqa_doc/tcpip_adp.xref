@@ -1,0 +1,270 @@
+%CREATE_DATE=26-NOV-1990 16:45:18.16
+SOCKET_INC_EX,EXAMPLE,9
+ Recommended C code for TCP/IP and PAMS #include statements
+ 5capiddelim
+ 1
+CLIENTS,CHAPTER,9
+ TCP/IP Adapter Client Applications
+ 
+ 5
+DEBUG_APPENDIX,APPENDIX,13
+ Sample tcpip_debug Output
+ D
+ 4
+_HIGHEST_APPENDIX_NO,TEXT,2
+ 
+ 
+ 6
+STARTUP,SECTION,7
+ Starting the TCP/IP Adapter Process
+ 
+ 3.3
+TCPADP_1,FIGURE,6
+ Logic flow of a TCP/IP Adapter Client
+ 2capiddelim
+ 1
+_15_MATH,MATH,15
+ 
+ 
+ 0
+_15_NOTE,NOTE,15
+ 
+ 
+ 0
+DEBUG_EX,EXAMPLE,9
+ Setting 
+ 5capiddelim
+ 3
+COMPILE_EXAMPLE,EXAMPLE,9
+ Compiling a TCP/IP Adapter client on VMS
+ 5capiddelim
+ 5
+OVERVIEW,CHAPTER,6
+ TCP/IP Queue Adapter Overview
+ 
+ 2
+CLIENT_APPENDIX,APPENDIX,11
+ Sample TCP/IP Client Listing
+ B
+ 2
+PCPAMS_APPENDIX,APPENDIX,14
+ PC-PAMS Compatibility
+ E
+ 5
+_15_TABLE,TABLE,15
+ 
+ 
+ 0
+LIMITS_APPENDIX,APPENDIX,10
+ Restrictions and Limitations
+ A
+ 1
+TCPTEST_EXAMPLE,EXAMPLE,9
+ Sample output from tcptest
+ 5capiddelim
+ 4
+INC_TABLE,TABLE,8
+ TCP/IP Socket communication include files needed
+ 4capiddelim
+ 1
+STARTUP_EXAMPLE,EXAMPLE,7
+ Starting the TCP/IP Adapter Process
+ 3capiddelim
+ 2
+PAMSV25_APPENDIX,APPENDIX,15
+ Using the TCP/IP Adapter under PAMS V2.5
+ F
+ 6
+5_PAGECAP_PREFIX,TEXT,5
+ 1
+ 
+ 
+6_PAGECAP_PREFIX,TEXT,6
+ 2
+ 
+ 
+7_PAGECAP_PREFIX,TEXT,7
+ 3
+ 
+ 
+8_PAGECAP_PREFIX,TEXT,8
+ 4
+ 
+ 
+9_PAGECAP_PREFIX,TEXT,9
+ 5
+ 
+ 
+BUILDING_CLIENTS,SECTION,9
+ Creating Client Applications
+ 
+ 5.3
+STARTUP_EXAMPLE2,EXAMPLE,7
+ Starting the TCP/IP Adapter Process Interactively
+ 3capiddelim
+ 3
+API,CHAPTER,8
+ TCP/IP Adapter API
+ 
+ 4
+PAMS_INCLUDE_TBL,TABLE,9
+ TCP/IP Adapter API Include file cross-reference
+ 5capiddelim
+ 1
+10_PAGECAP_PREFIX,TEXT,10
+ A
+ 
+ 
+11_PAGECAP_PREFIX,TEXT,11
+ B
+ 
+ 
+12_PAGECAP_PREFIX,TEXT,12
+ C
+ 
+ 
+13_PAGECAP_PREFIX,TEXT,13
+ D
+ 
+ 
+14_PAGECAP_PREFIX,TEXT,14
+ E
+ 
+ 
+_15_FIGURE,FIGURE,15
+ 
+ 
+ 0
+15_PAGECAP_PREFIX,TEXT,15
+ F
+ 
+ 
+_HIGHEST_PART_NO,TEXT,2
+ 
+ 
+ 0
+COMPONENTS,SECTION,6
+ Components
+ 
+ 2.4
+MODIFYING_CLIENTS,SECTION,9
+ Modifying Client Applications to use the TCP/IP Adapter
+ 
+ 5.4
+_CONDITION_VALUE_STRING,TEXT,1
+ 
+ 
+ 
+STATUS_TBL,TABLE,9
+ Additional Status return values
+ 5capiddelim
+ 2
+DUAL_TASKS_FIGURE,FIGURE,6
+ Using Multiple TCP/IP Adapter Processes
+ 2capiddelim
+ 2
+_15_EXAMPLE,EXAMPLE,15
+ 
+ 
+ 0
+API_REBUILD,EXAMPLE,8
+ Rebuilding the VMS TCP/IP API library modules
+ 4capiddelim
+ 1
+DESCRIPTION,SECTION,6
+ Description
+ 
+ 2.1
+ADP_PROCESS,CHAPTER,7
+ The TCP/IP Adapter Process (PAMS_TCPIP_ADAPTER.EXE)
+ 
+ 3
+5_HL_PREFIX,TEXT,5
+ 1
+ 
+ 
+6_HL_PREFIX,TEXT,6
+ 2
+ 
+ 
+7_HL_PREFIX,TEXT,7
+ 3
+ 
+ 
+8_HL_PREFIX,TEXT,8
+ 4
+ 
+ 
+9_HL_PREFIX,TEXT,9
+ 5
+ 
+ 
+10_HL_PREFIX,TEXT,10
+ A
+ 
+ 
+11_HL_PREFIX,TEXT,11
+ B
+ 
+ 
+12_HL_PREFIX,TEXT,12
+ C
+ 
+ 
+13_HL_PREFIX,TEXT,13
+ D
+ 
+ 
+14_HL_PREFIX,TEXT,14
+ E
+ 
+ 
+15_HL_PREFIX,TEXT,15
+ F
+ 
+ 
+FRONT,FRONT_MATTER,4
+ 
+ 
+ 
+INSTALLATION,SECTION,6
+ Installation
+ 
+ 2.5
+INTRODUCTION,CHAPTER,5
+ Introduction
+ 
+ 1
+REQUIREMENTS,SECTION,6
+ Requirements
+ 
+ 2.3
+OPT_APPENDIX,APPENDIX,12
+ Sample Listing of PAMS_TCPIP.OPT
+ C
+ 3
+PORT_ARG_EX1,EXAMPLE,9
+ Setting host name and port number by arguments
+ 5capiddelim
+ 2
+API_OVERVIEW,SECTION,9
+ Overview
+ 
+ 5.1
+_HIGHEST_CHAPTER_NO,TEXT,2
+ 
+ 
+ 5
+_HIGHEST_ELEMENT_NO,TEXT,2
+ 
+ 
+ 15
+BUILD_EXAMPLE,EXAMPLE,7
+ Sample rebuild of the PAMS_TCPIP_ADAPTER.EXE image
+ 3capiddelim
+ 1
+FUNCTIONALITY,SECTION,6
+ Functionality
+ 
+ 2.2
+%END_OF_FILE

@@ -1,0 +1,20 @@
+
+XHOST Performance stats for bounce processes
+
+
+			2 processes		6 processes	Est. Increase
+
+Interrupt Stack:	12 - 19%		18 - 21%	4%
+
+Kernel Mode:		20 - 32%		30 - 40%	9%
+
+Executive Mode:		2 - 8%			6 - 9%		2.5%
+
+User Mode:		22 - 33%		38 - 42%	12.5%
+
+Supervisor mode:	0 - 4%			1%		None
+
+Idle:			20 - 30%		9%		-16%
+
+
+

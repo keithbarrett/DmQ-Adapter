@@ -1,0 +1,36 @@
+Test #1
+
+2 processes on the same 3100 system. One directly connected to the PAMS
+bus, the other via the DmQA. The status below are for roundtrip
+messages.
+
+
+
+message_length?                             :1000
+Send recoverable messages? 0 = no, 1 = yes  :
+Test iterations? 0 = loop forever           :5000
+<CR> to start:
+  5 sec Total rcvd:     200     Incr:   100     20.000/sec
+  9 sec Total rcvd:     400     Incr:   200     22.222/sec
+ 10 sec Total rcvd:     622     Incr:   222     22.200/sec
+ 10 sec Total rcvd:     844     Incr:   222     22.200/sec
+ 11 sec Total rcvd:     1066    Incr:   222     20.182/sec
+ 14 sec Total rcvd:     1268    Incr:   202     14.429/sec
+  6 sec Total rcvd:     1412    Incr:   144     24.000/sec
+ 11 sec Total rcvd:     1652    Incr:   240     21.818/sec
+  9 sec Total rcvd:     1870    Incr:   218     24.222/sec
+ 11 sec Total rcvd:     2112    Incr:   242     22.000/sec
+  9 sec Total rcvd:     2332    Incr:   220     24.444/sec
+ 11 sec Total rcvd:     2576    Incr:   244     22.182/sec
+  9 sec Total rcvd:     2798    Incr:   222     24.667/sec
+ 11 sec Total rcvd:     3045    Incr:   247     22.455/sec
+ 10 sec Total rcvd:     3270    Incr:   225     22.500/sec
+ 10 sec Total rcvd:     3495    Incr:   225     22.500/sec
+  9 sec Total rcvd:     3720    Incr:   225     25.000/sec
+ 11 sec Total rcvd:     3970    Incr:   250     22.727/sec
+ 10 sec Total rcvd:     4197    Incr:   227     22.700/sec
+ 10 sec Total rcvd:     4424    Incr:   227     22.700/sec
+ 10 sec Total rcvd:     4651    Incr:   227     22.700/sec
+ 10 sec Total rcvd:     4878    Incr:   227     22.700/sec
+
+Test done: sent:5000 rcvd:5000 rate:22.222/sec

@@ -1,0 +1,236 @@
+
+    The following describes the DmQ Adapter, as it specifically relates
+to the Apple/AS400 project.
+
+
+
+General Overview:
+
+    The DmQA is a functional API replacement for use on systems not supported
+    by DECmessageQ. It provides this functionality through use of a remote
+    server process running on a DECmessageQ/VMS system. The DmQA consists of
+    2 components: The Client software and the VMS Server Process (provided in
+    binary).
+    
+    The Client software is provided in source form and is written as portable
+    C code. The user compiles this code on the foreign platform and links
+    it with the application.
+    
+    The Server process is built by linking the object modules on the VMS
+    system together, and the resulting executable is run as a detached
+    process. Command procedures are provided to build and run the Server.
+    
+
+    Client Software:
+
+    The Client software is composed of 2 functional modules; the PAMS API
+    and the communications module. All of which are compiled and linked into
+    the user's application. The PAMS API consists of the following files:
+    
+        p_entry.h       PAMS Entry points include file.
+        p_return.h      PAMS return codes include file.
+        p_typecl.h      PAMS type/class include file.
+        p_proces.h      PAMS process include file.
+        p_group.h       PAMS group include file.
+        p_symbol.h      PAMS symbol definitions include file.
+        sbsmsgde.h      PAMS SBS include file.
+        availmsg.h      PAMS AVAIL message include file.
+        p_dmqa.h        DmQA include file.
+        dmqin.c         DmQA byte-ordering functions.
+        dmqpp.c         DmQA push/pop functions.
+        dmqa_api.c      DmQA PAMS API replacement functions.
+        
+    There are 2 communications modules supplied:
+    
+        dmqa_tso.c      DmQA communications over TCP/IP sockets (UCX)
+        dmqa_tas.c      DmQA communications over TCP/IP for AS/400.
+        
+
+    Together, they provide the user with the following PAMS functions:
+    
+    PAMS_DCL_PROCESS (obsolete call -- provided for portability only)
+    PAMS_ATTACH_Q
+    PAMS_GET_MSG
+    PAMS_GET_MSGW
+    PAMS_PUT_MSG
+    PAMS_LOCATE_Q
+    PAMS_CONFIRM_MSG
+    PAMS_SET_SELECT
+    PAMS_CANCEL_SELECT
+    PAMS_EXIT        
+
+    These calls, and their arguments, are fully documented in the DECmessageQ
+    programmer's guide.
+    
+
+
+Using the DmQA Client Software:
+
+    Overview:
+    
+    The Client software was designed to be completely compatible with the
+    DECmessageQ PAMS API. Filenames and include files for use on non-VMS
+    systems are patterned after the DECmessageQ products for non-VMS
+    systems (Ultrix, MS-DOS, etc). Applications that work with the DmQ
+    Adapter will also compile and function with the DECmessageQ product.
+    
+    Application programs intended for use on non-VMS systems need to
+    follow the portable coding guidelines presented in the "writing Portable
+    Code" chapter of the DECmessageQ Programmer's Guide. Specifically, the
+    following items must be examined:
+    
+    1) Use only the PAMS calls supported in the DmQA
+    
+    2) VMS has a different DECmessageQ include file structure than the
+       non-VMS DECmessageQ products and the DmQ Adapter. Example 11-1
+       in the DECmessageQ Programmer's Guide shows the correct method
+       of writing the "#include" statements for portability on all DmQ
+       platforms.
+       
+    3) All arguments must be specified in all PAMS calls. Optional arguments
+       should be specified as a 0 passed by value.
+       
+    4) The DmQ Adapter is more strict than the DECmessageQ VMS product in its
+       enforcement of datatypes and function prototypes. While programs
+       written for the DmQA will not require modification for use with
+       DECmessageQ/VMS, VMS applications may require some modifications when
+       used with the DmQ Adapter.
+
+    5) The DmQ Adapter provides more functionality than the current
+       DECmessageQ products for non-VMS systems, as well as larger buffer
+       and message limits. Programs being designed for use with multiple
+       DECmessageQ supported systems should stay within the functionality
+       that is common to those systems.
+       
+    6) Applications programs should always include the following system
+       include files (if available):
+       
+                stddef.h
+                types.h
+                string.h
+                
+
+
+    Building Applications:
+    
+    The DmQ Adapter was designed to be as transparent as possible. To use
+    the DmQ Adapter, DECmessageQ applications need only #include an additional
+    include file, and set some global variables (depending on the platforms
+    being used). The global variables may be set in one of two ways:
+    
+           Directly code their values within the application. This should
+           be done within an "#ifdef DMQ__ADAPTER" statement to maintain
+           code portability.
+           
+                                    OR
+        
+           Specify them on program startup via the argc and **argv arguments.
+        
+           The DmQA has an automatic ability that if the application
+           program includes the following lines in the main() routine before
+           any PAMS calls take place:
+           
+                #ifdef DMQ__QADAPTER
+                    DMQA__argv = argv;
+                    DMQA__argc = argc;
+                #endif
+                
+          Most global variables can be specified during program startup
+          as arguments, providing greater flexibility than hard-coding the
+          values.
+            
+        
+    The following lists the changes needed within a DECmessageQ application
+    to use the DmQA on the AS/400 platform with the "dmqa_tas" communications 
+    module:
+    
+    1) Add the following #include statement, AFTER all system and
+       PAMS include files:
+       
+        #include "p_dmqa.h"
+        
+    2) Set the global variables. If they are to be set via the main()
+       argument list, then the following can be specified during your program
+       startup command line as:
+       
+            {program}  DMQA "host" port [debug]
+            
+       where '"host"' is the name of the host VMS system running the server
+       process, and 'port' is the tcp/ip port number the server is using
+       to communicate with. '[debug]' is optional, and will enable debug
+       mode if non-zero. (Note: The "DMQA__trans_from_EBCDIC" global
+       variable cannot be specified as a startup parameter).
+       
+       
+       If setting them within program code, then:
+       
+       Within the program main() module, and BEFORE ANY PAMS CALLS,
+       set the following global variables (they will have already
+       been defined) within an "#ifdef DMQ__QADAPTER/#endif block:
+       
+            DMQA__host  (char *)    pointer to a null-terminated string
+                                    containing the name of the host VMS system
+                                    running the DmQA server.
+                                    
+            DMQA__port  (unsigned short)
+                                    The tcp/ip port number on the host VMS
+                                    system being used (0-65535)
+                                    
+            DMQA__debug (int)       Optional zero/non-zero flag to enable
+                                    debug mode.
+                                    
+
+        Also, the following is an optional global variable that (if
+        desired) must be set within program logic enclosed in a
+        "#ifdef DMQ__ADAPTER/#endif" statement. This variable may be set
+        and cleared on a per PAMS call basis if desired:
+
+            DMQA__trans_from_EBCDIC Optional zero/non-zero flag; Translate
+                                    message from EBCDIC into text before
+                                    placing it on the PAMS message bus.
+
+
+
+
+
+
+DmQA PAMS status return codes:
+
+    Status Return codes are the same as those documented in the DECmessageQ
+    programmer's guide. In addition, the DmQ Adapter may return the
+    following status values for any PAMS call:
+    
+    PAMS__COMMERR       A communications or internal protocol error has
+                        occured. The data link may or may not still be
+                        available, depending on condition.
+                        
+    PAMS__LINK_DOWN     Communications link cannot be established, or
+                        has been lost due to a system situation.
+                        
+    PAMS__BUFFEROVR     The resulting message was too big to send, or was
+                        to big to put in the user's buffer area on receive.
+    
+    PAMS__UNSUPPORTED   An attempt was made to use a function not
+                        supported by the DmQ Adapter, or the server does
+                        not support this client software.
+    
+    PAMS__BADLOGIC      A DmQA internal error took place within the local
+                        client software.
+                        
+    PAMS__INTERNAL      A DmQA internal error took place within the DmQ
+                        Adapter server process.
+                        
+    To maintain portability, the user program should avoid testing for these
+    specific error values unless such logic is enclosed in an
+    "#ifdef DMQ_QADAPTER/#endif".
+    
+
+
+DEBUG MODE:
+
+    Setting global variable DMQA__debug to non-zero will cause the DmQ
+    Adapter to print various status and debugging information to the
+    default output device. This can be especially useful in tracking down
+    errors, or getting more detail concerning any of the above error
+    values. In concept, this ability is similar to defining the
+    DMQ$DEBUG logical on DECmessageQ VMS systems.
