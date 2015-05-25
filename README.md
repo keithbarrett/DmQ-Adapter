@@ -18,4 +18,8 @@ I was quite proud of this work, as I wrote it in portable C (ANSI and K&R)
 processsors. There were no compile variants in the code; just a platform
 specific include file that defined how the code would compile and run.
 
+Note that this adapter requires a running DECmessageQ/BEAmessageQ/DECPAMS
+system with at least one connected VAX/VMS system to host the server
+component.
+
 - Keith
